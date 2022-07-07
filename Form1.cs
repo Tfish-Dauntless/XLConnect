@@ -94,6 +94,7 @@ namespace XLConnect
 
 
                     Export_Button.Visible = true;
+                    Clear_Button.Visible = true;
                 }
                 catch (Exception ex)
                 {
@@ -175,6 +176,13 @@ namespace XLConnect
         private async void Table_Combobox_Click(object sender, EventArgs e)
         {
             await PopulateTableComboBox();
+        }
+
+        private void Clear_Button_Click(object sender, EventArgs e)
+        {
+            Table.Clear();
+            Table.AcceptChanges();
+            MessageBox.Show("Tables have been cleared");
         }
     }
 

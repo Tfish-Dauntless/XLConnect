@@ -31,6 +31,8 @@ namespace XLConnect
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Control_GroupBox = new System.Windows.Forms.GroupBox();
+            this.Table_Combobox = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.TestConnection_Button = new System.Windows.Forms.Button();
             this.DBCOMBOBOX = new System.Windows.Forms.ComboBox();
             this.Server_TextBox = new System.Windows.Forms.TextBox();
@@ -42,8 +44,7 @@ namespace XLConnect
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.Export_Button = new System.Windows.Forms.Button();
             this.Run_Button = new System.Windows.Forms.Button();
-            this.Table_Combobox = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.Clear_Button = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -88,6 +89,24 @@ namespace XLConnect
             this.Control_GroupBox.TabIndex = 0;
             this.Control_GroupBox.TabStop = false;
             this.Control_GroupBox.Text = "SQLConnection";
+            // 
+            // Table_Combobox
+            // 
+            this.Table_Combobox.FormattingEnabled = true;
+            this.Table_Combobox.Location = new System.Drawing.Point(316, 51);
+            this.Table_Combobox.Name = "Table_Combobox";
+            this.Table_Combobox.Size = new System.Drawing.Size(472, 21);
+            this.Table_Combobox.TabIndex = 6;
+            this.Table_Combobox.Click += new System.EventHandler(this.Table_Combobox_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(250, 54);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(37, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Table:";
             // 
             // TestConnection_Button
             // 
@@ -155,6 +174,7 @@ namespace XLConnect
             // 
             // Action_GroupBox
             // 
+            this.Action_GroupBox.Controls.Add(this.Clear_Button);
             this.Action_GroupBox.Controls.Add(this.progressBar1);
             this.Action_GroupBox.Controls.Add(this.Export_Button);
             this.Action_GroupBox.Controls.Add(this.Run_Button);
@@ -176,7 +196,7 @@ namespace XLConnect
             // 
             // Export_Button
             // 
-            this.Export_Button.Location = new System.Drawing.Point(429, 19);
+            this.Export_Button.Location = new System.Drawing.Point(346, 19);
             this.Export_Button.Name = "Export_Button";
             this.Export_Button.Size = new System.Drawing.Size(116, 28);
             this.Export_Button.TabIndex = 1;
@@ -187,7 +207,7 @@ namespace XLConnect
             // 
             // Run_Button
             // 
-            this.Run_Button.Location = new System.Drawing.Point(256, 19);
+            this.Run_Button.Location = new System.Drawing.Point(173, 19);
             this.Run_Button.Name = "Run_Button";
             this.Run_Button.Size = new System.Drawing.Size(114, 28);
             this.Run_Button.TabIndex = 0;
@@ -195,23 +215,16 @@ namespace XLConnect
             this.Run_Button.UseVisualStyleBackColor = true;
             this.Run_Button.Click += new System.EventHandler(this.Run_Button_Click);
             // 
-            // Table_Combobox
+            // Clear_Button
             // 
-            this.Table_Combobox.FormattingEnabled = true;
-            this.Table_Combobox.Location = new System.Drawing.Point(316, 51);
-            this.Table_Combobox.Name = "Table_Combobox";
-            this.Table_Combobox.Size = new System.Drawing.Size(472, 21);
-            this.Table_Combobox.TabIndex = 6;
-            this.Table_Combobox.Click += new System.EventHandler(this.Table_Combobox_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(250, 54);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(37, 13);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Table:";
+            this.Clear_Button.Location = new System.Drawing.Point(520, 19);
+            this.Clear_Button.Name = "Clear_Button";
+            this.Clear_Button.Size = new System.Drawing.Size(116, 28);
+            this.Clear_Button.TabIndex = 3;
+            this.Clear_Button.Text = "Clear";
+            this.Clear_Button.UseVisualStyleBackColor = true;
+            this.Clear_Button.Visible = false;
+            this.Clear_Button.Click += new System.EventHandler(this.Clear_Button_Click);
             // 
             // Form1
             // 
@@ -250,6 +263,7 @@ namespace XLConnect
         private System.Windows.Forms.Button Run_Button;
         private System.Windows.Forms.ComboBox Table_Combobox;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button Clear_Button;
     }
 }
 
