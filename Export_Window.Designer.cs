@@ -243,10 +243,10 @@ namespace ExcelMate
             // Settings_GroupBox
             // 
             this.Settings_GroupBox.Controls.Add(this.flowLayoutPanel1);
-            this.Settings_GroupBox.Dock = System.Windows.Forms.DockStyle.Left;
+            this.Settings_GroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Settings_GroupBox.Location = new System.Drawing.Point(0, 0);
             this.Settings_GroupBox.Name = "Settings_GroupBox";
-            this.Settings_GroupBox.Size = new System.Drawing.Size(248, 163);
+            this.Settings_GroupBox.Size = new System.Drawing.Size(435, 163);
             this.Settings_GroupBox.TabIndex = 7;
             this.Settings_GroupBox.TabStop = false;
             this.Settings_GroupBox.Text = "Settings";
@@ -413,6 +413,8 @@ namespace ExcelMate
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(435, 295);
             this.Controls.Add(this.splitContainer1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.MaximizeBox = false;
             this.Name = "Export_Window";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Export_Window";
