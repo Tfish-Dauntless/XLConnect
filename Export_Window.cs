@@ -1,4 +1,5 @@
-﻿using OfficeOpenXml;
+﻿
+using Sylvan.Data.Excel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,36 +27,21 @@ namespace ExcelMate
         {
             
             var File = new FileInfo(filepath);
-            using (var package = new ExcelPackage(File))
+            using (ExcelDataWriter edw = ExcelDataWriter.Create(filepath))
             {
                
                 if (type == "ExcelCap")
                 {
                     //MessageBox.Show("I've made it to the export method" + DataList.Rows.Count.ToString());
                     DataTable firstMilly = DataList.AsEnumerable().Skip(toSkip).Take(tokeep).CopyToDataTable();
-                    var Worksheet = package.Workbook.Worksheets.Add(Name: "Delivery");
-                    var range = Worksheet.Cells["A1"].LoadFromDataTable((firstMilly), true);
-                    var column = Worksheet.Dimension.End.Column;
-                    for (var i = 1; i <= Worksheet.Dimension.End.Column; i++) { Worksheet.Column(i).Width = 40; };
-                    Worksheet.View.FreezePanes(1, 2);
-
-                    await package.SaveAsync();
+                    var reader = firstMilly.CreateDataReader();
+                    await edw.WriteAsync(reader, "Delivery");
                 }
                 else
                 {
-                  
-                    var Worksheet = package.Workbook.Worksheets.Add(Name: "Delivery");
-                    var range = Worksheet.Cells["A1"].LoadFromDataTable(DataList, true);
-                    var column = Worksheet.Dimension.End.Column;
-                    for (var i = 1; i <= Worksheet.Dimension.End.Column; i++) {
-                       
-                        Worksheet.Column(i).Width = 40;
-                    };
 
-                    Worksheet.View.FreezePanes(1, 2);
-
-                    await package.SaveAsync();
-                   
+                    var reader = DataList.CreateDataReader();
+                    await edw.WriteAsync(reader, "Delivery");
                 }
             }
 
