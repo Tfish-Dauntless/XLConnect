@@ -215,7 +215,7 @@ namespace XLConnect
             this.Export_Tab.Padding = new System.Windows.Forms.Padding(3);
             this.Export_Tab.Size = new System.Drawing.Size(792, 423);
             this.Export_Tab.TabIndex = 0;
-            this.Export_Tab.Text = "Export";
+            this.Export_Tab.Text = "Query_DB";
             this.Export_Tab.UseVisualStyleBackColor = true;
             // 
             // Query_GroupBox

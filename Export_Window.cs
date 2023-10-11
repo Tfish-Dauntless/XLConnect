@@ -147,13 +147,13 @@ namespace ExcelMate
         {
             if (MaxRowSize_CheckBox.Checked)
             {
-                MaxRows_Label.Visible = true;
+                
                 RowsPerSheet_NumBox.Visible = true;
                 RowsPerSheet_NumBox.Value = 999999;
             }
             else
             {
-                MaxRows_Label.Visible = false;
+               
                 RowsPerSheet_NumBox.Visible = false;
             }
             
