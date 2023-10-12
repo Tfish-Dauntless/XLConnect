@@ -23,7 +23,8 @@ namespace ExcelMate
         private string DataBaseName { get; set; }
         private string TableName { get; set; }
         private SQL_Helper SQLHelper { get; set; }
-        public Export_Window(DataTable datalist,SQL_Helper sqlhelper, string server,string query = null,string database = null, string table = null)
+        private Data_Helper Helper { get; set; }
+        public Export_Window(DataTable datalist,SQL_Helper sqlhelper,Data_Helper helper, string server,string query = null,string database = null, string table = null)
         {
             InitializeComponent();
             Rowsleft = datalist.Rows.Count;
@@ -35,6 +36,7 @@ namespace ExcelMate
             DataBaseName = database;
             TableName = table;
             SQLHelper = sqlhelper;
+            Helper = helper;
         }
 
         private async Task<Dictionary<string, string>> GetDBContextFromQuery()
@@ -61,8 +63,8 @@ namespace ExcelMate
 
                 Match columnMatch = Columnregex.Match(Query);
                 Match fromLineMatch = fromLineRegex.Match(Query);
-
-                dbContext["Columns"] = columnMatch.Groups["columns"].Value;
+                var comma = ',';
+                dbContext["Columns"] = Helper.StripString(columnMatch.Groups["columns"].Value).Replace(",",",");
                 Group fromLine = fromLineMatch.Groups["from"];
 
                 Match dataBaseMatch;
@@ -150,14 +152,42 @@ namespace ExcelMate
         private void ExportLocation_Button_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "Data Files (*.Xlsx)|*.Xlsx";
+            saveFile.Filter = "Excel (*.Xlsx)|*.Xlsx|Comma Seperated (*.csv)|*.csv|Text (*.txt)|*.txt";
             saveFile.DefaultExt = "Xlsx";
+            
             saveFile.AddExtension = true;
             saveFile.FileName = DateTime.Now.ToString("yyyyMMdd") + "_REPLACEWITHCASENAME_Delivery";
 
             if (saveFile.ShowDialog() == DialogResult.OK)
             {
+                if (!Delimiter_TextBox.Enabled)
+                {
+                    Delimiter_TextBox.Enabled = true;
+                }
+                if (!Qualifier_TextBox.Enabled)
+                {
+                    Qualifier_TextBox.Enabled = true;
+                }
+                
                 ExportLocation_TextBox.Text = saveFile.FileName;
+
+                var ext = saveFile.FileName.Split('.').ToList().Last();
+                ExportType_ComboBox.Text = ext.ToUpper();
+                switch (ext)
+                {
+                    case "XLSX":
+                        Delimiter_TextBox.Enabled = false;
+                        Qualifier_TextBox.Enabled = false;
+                        break;
+                    case "CSV":
+                        Delimiter_TextBox.Text = ",";
+                        Qualifier_TextBox.Text = "\"";
+                        break;
+                    case "TXT":
+                        Delimiter_TextBox.Text = "|";
+                        Qualifier_TextBox.Text = "^";
+                        break;
+                }
             }
 
         }
@@ -186,46 +216,61 @@ namespace ExcelMate
                     MessageBox.Show($"Table in Query and Table Field do not match.\nQuery: {adjustedDBContext_Table.Trim()}\nField:   [{TableName.Trim()}] ");
                     return;
                 }
-
-                
-
-
-
-                int toSkip = 0;
-                int num = 1;
-                int MaxRowSize = 500000;
-                if (MaxRowSize_CheckBox.Checked)
+                if(ExportLocation_TextBox.Text == null || ExportLocation_TextBox.Text == String.Empty)
                 {
-                    MaxRowSize = Decimal.ToInt32(RowsPerSheet_NumBox.Value);
+                    MessageBox.Show($"Please provide an export location!");
+                    return;
                 }
-               
-                if (TotalRows > MaxRowSize)
+
+                var exportname = ExportLocation_TextBox.Text;
+
+                if(ExportType_ComboBox.Text == "CSV")
                 {
-                    while (Rowsleft > 0)
-                    {
-                        if (Rowsleft < MaxRowSize)
-                        {
-                            //MessageBox.Show("Im Here to export a large amount");
-                            await ExportToExcel(ExportLocation_TextBox.Text.Replace(".Xlsx", "") + "_" + num + ".Xlsx", "ExcelCap", Rowsleft, toSkip);
-
-                            break;
-                        }
-                        else
-                        {
-                            await ExportToExcel(ExportLocation_TextBox.Text.Replace(".Xlsx", "") + "_" + num + ".Xlsx", "ExcelCap", MaxRowSize, toSkip);
-                        }
-                        num += 1;
-                        toSkip += MaxRowSize;
-                        Rowsleft -= MaxRowSize;
-                    }
-
+                    exportname = ExportLocation_TextBox.Text.Replace(".Xlsx", ".csv");
                 }
-                else
+                if (ExportType_ComboBox.Text == "TXT")
                 {
-                   
-                    await ExportToExcel(ExportLocation_TextBox.Text);
-
+                    exportname = ExportLocation_TextBox.Text.Replace(".Xlsx", ".txt");
                 }
+
+                await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, DataBaseName, dbcontext["Columns"].Split(',').ToList(),ExportType_ComboBox.Text , Delimiter_TextBox.Text.ToCharArray().First(), Qualifier_TextBox.Text.ToCharArray().First());
+
+
+                //int toSkip = 0;
+                //int num = 1;
+                //int MaxRowSize = 500000;
+                //if (MaxRowSize_CheckBox.Checked)
+                //{
+                //    MaxRowSize = Decimal.ToInt32(RowsPerSheet_NumBox.Value);
+                //}
+
+                //if (TotalRows > MaxRowSize)
+                //{
+                //    while (Rowsleft > 0)
+                //    {
+                //        if (Rowsleft < MaxRowSize)
+                //        {
+                //            //MessageBox.Show("Im Here to export a large amount");
+                //            await ExportToExcel(ExportLocation_TextBox.Text.Replace(".Xlsx", "") + "_" + num + ".Xlsx", "ExcelCap", Rowsleft, toSkip);
+
+                //            break;
+                //        }
+                //        else
+                //        {
+                //            await ExportToExcel(ExportLocation_TextBox.Text.Replace(".Xlsx", "") + "_" + num + ".Xlsx", "ExcelCap", MaxRowSize, toSkip);
+                //        }
+                //        num += 1;
+                //        toSkip += MaxRowSize;
+                //        Rowsleft -= MaxRowSize;
+                //    }
+
+                //}
+                //else
+                //{
+
+                //    await ExportToExcel(ExportLocation_TextBox.Text);
+
+                //}
                 // await ExportToExcel(ExportLocation_TextBox.Text.Replace("_Delivery.Xlsx", "_RoundTracking.Xlsx"), "RoundTracking");
                 MessageBox.Show("Complete");
                 this.DialogResult = DialogResult.OK;
@@ -260,6 +305,31 @@ namespace ExcelMate
         public DataTable DataList { get; set; }
         public DataTable RoundTracking { get; set; }
 
-       
+        private void ExportType_ComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (!Delimiter_TextBox.Enabled)
+            {
+                Delimiter_TextBox.Enabled = true;
+            }
+            if (!Qualifier_TextBox.Enabled)
+            {
+                Qualifier_TextBox.Enabled = true;
+            }
+            switch (ExportType_ComboBox.Text)
+            {
+                case "XLSX":
+                    Delimiter_TextBox.Enabled = false;
+                    Qualifier_TextBox.Enabled = false;
+                    break;
+                case "CSV":
+                    Delimiter_TextBox.Text = ",";
+                    Qualifier_TextBox.Text = "\"";
+                    break;
+                case "TXT":
+                    Delimiter_TextBox.Text = "|";
+                    Qualifier_TextBox.Text = "^";
+                    break;
+            }
+        }
     }
 }

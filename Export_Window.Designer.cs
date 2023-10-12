@@ -40,49 +40,49 @@ namespace ExcelMate
             this.RowsToExport = new System.Windows.Forms.Label();
             this.ExportCount_Label = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.Location_GroupBox = new System.Windows.Forms.GroupBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.Location_GroupBox = new System.Windows.Forms.GroupBox();
             this.Actions_GroupBox = new System.Windows.Forms.GroupBox();
             this.Settings_GroupBox = new System.Windows.Forms.GroupBox();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.Qualifier_TextBox = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.Delimiter_TextBox = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.Qualifier_TextBox = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.ExportType_ComboBox = new System.Windows.Forms.ComboBox();
             this.ExportType_Label = new System.Windows.Forms.Label();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.ExportType_ComboBox = new System.Windows.Forms.ComboBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.RowsPerSheet_NumBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.Location_GroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            this.Location_GroupBox.SuspendLayout();
             this.Actions_GroupBox.SuspendLayout();
             this.Settings_GroupBox.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.panel5.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.panel6.SuspendLayout();
-            this.panel5.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.panel7.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar1
@@ -198,18 +198,6 @@ namespace ExcelMate
             this.splitContainer1.SplitterDistance = 209;
             this.splitContainer1.TabIndex = 9;
             // 
-            // Location_GroupBox
-            // 
-            this.Location_GroupBox.Controls.Add(this.ExportLocation_TextBox);
-            this.Location_GroupBox.Controls.Add(this.ExportLocation_Button);
-            this.Location_GroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Location_GroupBox.Location = new System.Drawing.Point(0, 0);
-            this.Location_GroupBox.Name = "Location_GroupBox";
-            this.Location_GroupBox.Size = new System.Drawing.Size(435, 42);
-            this.Location_GroupBox.TabIndex = 9;
-            this.Location_GroupBox.TabStop = false;
-            this.Location_GroupBox.Text = "Export Location";
-            // 
             // splitContainer3
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -228,6 +216,18 @@ namespace ExcelMate
             this.splitContainer3.Size = new System.Drawing.Size(435, 209);
             this.splitContainer3.SplitterDistance = 42;
             this.splitContainer3.TabIndex = 10;
+            // 
+            // Location_GroupBox
+            // 
+            this.Location_GroupBox.Controls.Add(this.ExportLocation_TextBox);
+            this.Location_GroupBox.Controls.Add(this.ExportLocation_Button);
+            this.Location_GroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Location_GroupBox.Location = new System.Drawing.Point(0, 0);
+            this.Location_GroupBox.Name = "Location_GroupBox";
+            this.Location_GroupBox.Size = new System.Drawing.Size(435, 42);
+            this.Location_GroupBox.TabIndex = 9;
+            this.Location_GroupBox.TabStop = false;
+            this.Location_GroupBox.Text = "Export Location";
             // 
             // Actions_GroupBox
             // 
@@ -251,14 +251,54 @@ namespace ExcelMate
             this.Settings_GroupBox.TabStop = false;
             this.Settings_GroupBox.Text = "Settings";
             // 
-            // panel1
+            // flowLayoutPanel1
             // 
-            this.panel1.Controls.Add(this.MaxRowSize_CheckBox);
-            this.panel1.Controls.Add(this.RowsPerSheet_NumBox);
-            this.panel1.Location = new System.Drawing.Point(3, 6);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(239, 24);
-            this.panel1.TabIndex = 7;
+            this.flowLayoutPanel1.Controls.Add(this.panel5);
+            this.flowLayoutPanel1.Controls.Add(this.panel3);
+            this.flowLayoutPanel1.Controls.Add(this.panel4);
+            this.flowLayoutPanel1.Controls.Add(this.panel1);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.BottomUp;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 16);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(245, 144);
+            this.flowLayoutPanel1.TabIndex = 9;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.panel6);
+            this.panel5.Location = new System.Drawing.Point(3, 101);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(239, 40);
+            this.panel5.TabIndex = 2;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.label2);
+            this.panel6.Controls.Add(this.Qualifier_TextBox);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel6.Location = new System.Drawing.Point(0, 4);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(239, 36);
+            this.panel6.TabIndex = 0;
+            // 
+            // label2
+            // 
+            this.label2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label2.Location = new System.Drawing.Point(0, 0);
+            this.label2.Name = "label2";
+            this.label2.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+            this.label2.Size = new System.Drawing.Size(86, 36);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Quote Qualifier :";
+            // 
+            // Qualifier_TextBox
+            // 
+            this.Qualifier_TextBox.Dock = System.Windows.Forms.DockStyle.Right;
+            this.Qualifier_TextBox.Location = new System.Drawing.Point(92, 0);
+            this.Qualifier_TextBox.Name = "Qualifier_TextBox";
+            this.Qualifier_TextBox.Size = new System.Drawing.Size(147, 20);
+            this.Qualifier_TextBox.TabIndex = 2;
             // 
             // panel3
             // 
@@ -268,6 +308,16 @@ namespace ExcelMate
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(239, 24);
             this.panel3.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+            this.label1.Size = new System.Drawing.Size(57, 24);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Delimiter :";
             // 
             // Delimiter_TextBox
             // 
@@ -286,51 +336,16 @@ namespace ExcelMate
             this.panel4.Size = new System.Drawing.Size(239, 29);
             this.panel4.TabIndex = 9;
             // 
-            // label1
+            // ExportType_Label
             // 
-            this.label1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-            this.label1.Size = new System.Drawing.Size(57, 24);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Delimiter :";
-            // 
-            // panel6
-            // 
-            this.panel6.Controls.Add(this.label2);
-            this.panel6.Controls.Add(this.Qualifier_TextBox);
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel6.Location = new System.Drawing.Point(0, 4);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(239, 36);
-            this.panel6.TabIndex = 0;
-            // 
-            // Qualifier_TextBox
-            // 
-            this.Qualifier_TextBox.Dock = System.Windows.Forms.DockStyle.Right;
-            this.Qualifier_TextBox.Location = new System.Drawing.Point(92, 0);
-            this.Qualifier_TextBox.Name = "Qualifier_TextBox";
-            this.Qualifier_TextBox.Size = new System.Drawing.Size(147, 20);
-            this.Qualifier_TextBox.TabIndex = 2;
-            // 
-            // label2
-            // 
-            this.label2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label2.Location = new System.Drawing.Point(0, 0);
-            this.label2.Name = "label2";
-            this.label2.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-            this.label2.Size = new System.Drawing.Size(86, 36);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Quote Qualifier :";
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.panel6);
-            this.panel5.Location = new System.Drawing.Point(3, 101);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(239, 40);
-            this.panel5.TabIndex = 2;
+            this.ExportType_Label.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ExportType_Label.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ExportType_Label.Location = new System.Drawing.Point(0, 0);
+            this.ExportType_Label.Name = "ExportType_Label";
+            this.ExportType_Label.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+            this.ExportType_Label.Size = new System.Drawing.Size(92, 29);
+            this.ExportType_Label.TabIndex = 1;
+            this.ExportType_Label.Text = "Export Type :";
             // 
             // ExportType_ComboBox
             // 
@@ -345,30 +360,16 @@ namespace ExcelMate
             this.ExportType_ComboBox.Name = "ExportType_ComboBox";
             this.ExportType_ComboBox.Size = new System.Drawing.Size(147, 21);
             this.ExportType_ComboBox.TabIndex = 0;
+            this.ExportType_ComboBox.SelectedValueChanged += new System.EventHandler(this.ExportType_ComboBox_SelectedValueChanged);
             // 
-            // ExportType_Label
+            // panel1
             // 
-            this.ExportType_Label.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ExportType_Label.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ExportType_Label.Location = new System.Drawing.Point(0, 0);
-            this.ExportType_Label.Name = "ExportType_Label";
-            this.ExportType_Label.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-            this.ExportType_Label.Size = new System.Drawing.Size(92, 29);
-            this.ExportType_Label.TabIndex = 1;
-            this.ExportType_Label.Text = "Export Type :";
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Controls.Add(this.panel5);
-            this.flowLayoutPanel1.Controls.Add(this.panel3);
-            this.flowLayoutPanel1.Controls.Add(this.panel4);
-            this.flowLayoutPanel1.Controls.Add(this.panel1);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.BottomUp;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 16);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(245, 144);
-            this.flowLayoutPanel1.TabIndex = 9;
+            this.panel1.Controls.Add(this.MaxRowSize_CheckBox);
+            this.panel1.Controls.Add(this.RowsPerSheet_NumBox);
+            this.panel1.Location = new System.Drawing.Point(3, 6);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(239, 24);
+            this.panel1.TabIndex = 7;
             // 
             // splitContainer4
             // 
@@ -389,15 +390,6 @@ namespace ExcelMate
             this.splitContainer4.SplitterDistance = 53;
             this.splitContainer4.TabIndex = 9;
             // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.ExportCount_Label);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(235, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(200, 53);
-            this.panel2.TabIndex = 9;
-            // 
             // panel7
             // 
             this.panel7.Controls.Add(this.RowsToExport);
@@ -406,6 +398,15 @@ namespace ExcelMate
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(229, 53);
             this.panel7.TabIndex = 10;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.ExportCount_Label);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel2.Location = new System.Drawing.Point(235, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(200, 53);
+            this.panel2.TabIndex = 9;
             // 
             // Export_Window
             // 
@@ -423,29 +424,29 @@ namespace ExcelMate
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.Location_GroupBox.ResumeLayout(false);
-            this.Location_GroupBox.PerformLayout();
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            this.Location_GroupBox.ResumeLayout(false);
+            this.Location_GroupBox.PerformLayout();
             this.Actions_GroupBox.ResumeLayout(false);
             this.Settings_GroupBox.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
-            this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
-            this.panel5.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.splitContainer4.Panel1.ResumeLayout(false);
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -179,6 +179,32 @@ namespace XLConnect.Classes
             }
 
         }
+        public string FormatValue(object v)
+        {
+            if (v == null)
+            {
+                return null;
+            }
+            if (v is DateTime dt)
+            {
+                return dt.ToString("O");
+            }
+            if (v is DateTimeOffset dto)
+            {
+                return dto.ToString("O");
+            }
+            if (v is byte[] ba)
+            {
+                var sb = new StringBuilder(2 + ba.Length * 2);
+                sb.Append("0x");
+                for (int i = 0; i < ba.Length; i++)
+                {
+                    sb.Append(ba[i].ToString("X2"));
+                }
+                return sb.ToString();
+            }
+            return v.ToString();
+        }
 
         public string StripString(string input)
         {
