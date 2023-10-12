@@ -284,7 +284,7 @@ namespace XLConnect.Classes
                 var newcols = new List<string>();
                 var columnstoAdd = new List<string>();
 
-                await SQLHELPER.GatherSqlColumns(ServerName, DataBaseName, TableName, newcols);
+               // await SQLHELPER.GatherSqlColumns(ServerName, DataBaseName, TableName, newcols);
                 var currentColumns = (from dc in table.Columns.Cast<DataColumn>() select dc.ColumnName.ToUpper().Trim()).ToList();
 
                 // MessageBox.Show(String.Join(",", currentColumns));

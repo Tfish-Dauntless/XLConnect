@@ -85,11 +85,12 @@ namespace XLConnect.Classes
 
             return true;
         }
-        public async Task<bool> GatherSqlColumns(string server, string database, string tablename, List<string> columns)
+        public async Task<List<string>> GatherSqlColumns(string server, string database, string tablename)
         {
             try
             {
 
+                List<string> columns = new List<string>();
 
                 string connectionString = @"Data Source=" + server + ";Initial Catalog=" + database + ";Integrated Security=True;Timeout=32767";
 
@@ -113,25 +114,15 @@ namespace XLConnect.Classes
                         {
                             columns.Add(column[0].ToString().ToUpper().Trim());
                         }
-
-
-
+                        table.Dispose();
                     }
-
-
                 }
-                return true;
+                return columns;
             }
             catch (Exception e)
             {
                 throw new Exception($"Error gathering Columns\nError Message: {e.Message}");
-
-                return false;
             }
-
-
-
-
         }
         public async Task<bool> CreateDataBase(string server, string database)
         {

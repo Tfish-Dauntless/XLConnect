@@ -381,7 +381,7 @@ namespace XLConnect
 
         private void Export_Button_Click(object sender, EventArgs e)
         {
-            var exportWindow = new ExcelMate.Export_Window(Table);
+            var exportWindow = new ExcelMate.Export_Window(Table,SQLHELPER,Server_TextBox.Text, Query_Box.Text, DBCOMBOBOX.Text,Table_Combobox.Text);
             exportWindow.Show();
         }
        
