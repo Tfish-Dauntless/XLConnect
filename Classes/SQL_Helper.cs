@@ -1,7 +1,11 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using Sylvan.Data;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +15,123 @@ namespace XLConnect.Classes
 {
    public class SQL_Helper
     {
+        Data_Helper Helper {  get; set; }
+       
+        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,string tableName,List<string>headers,string exportType,char delim,char qualifier)
+        {
+            try
+            {
+                Helper = helper;
+                string connectionString = @"Data Source=" + ServerName + ";Initial Catalog=" + dataBaseName + ";Integrated Security=True;Timeout=32767";
+                //List<string>fixedHeaders = new List<string>();
+
+                //foreach(var header in headers)
+                //{
+                //    var adjuestheader =  Helper.StripString(header.Replace("[", "").Replace("]", "").Replace(",",""));
+                //    fixedHeaders.Add(adjuestheader);
+                //}
+
+                using (SqlConnection _con = new SqlConnection(connectionString))
+                {
+                    _con.Open();
+
+                    //MessageBox.Show($"Connection Open\nnew FilePath: {exportLocation}");
+                    //MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}");
+
+                    // MessageBox.Show("Created Export Table");
+
+                    using (SqlCommand _cmd2 = new SqlCommand(query, _con))
+                    {
+                        _cmd2.CommandTimeout = 32767;
+
+                        using (var reader = await _cmd2.ExecuteReaderAsync())
+                        {
+                            switch (exportType.ToLower())
+                            {
+                                case "dat":
+                                case "txt":
+                                case "csv":
+                                    using (var tw = File.CreateText(exportLocation))
+                                    {
+                                       
+                                        var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
+                                        tw.Write(combinedHeaders.Replace("[","").Replace("]","")+ "\r\n");
+                                        while (await reader.ReadAsync())
+                                        {
+                                            //MessageBox.Show("Reading");
+                                            for (int i = 0; i < reader.FieldCount; i++)
+                                            {
+                                                if (i != 0)
+                                                {
+                                                    tw.Write(delim);
+                                                }
+
+                                                string val = reader[i] == null ? null :  Helper.FormatValue(reader[i]);
+
+
+                                                tw.Write(qualifier);
+                                                tw.Write(val.Replace(qualifier.ToString(), $"{qualifier}{qualifier}"));
+                                                tw.Write(qualifier);
+                                            }
+                                            tw.Write("\r\n");
+                                        }
+                                    }
+                                    break;
+                                case "xlsx":
+                                    var Template = new FileInfo(exportLocation);
+                                    var xlPackage = new ExcelPackage(Template);
+                                    var wsCards = xlPackage.Workbook.Worksheets.Add(tableName);
+                                    int row = 1, col = 1;
+
+
+
+                                    //foreach (DataRow rw in schemaTable.Rows)
+                                    //{
+                                    // Write the headers to the first row
+                                    //var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
+                                    foreach (var column in headers)
+                                    {
+                                        
+                                        // Condition Will only be required if you want to write 
+                                        // specific column names
+                                        //if (column.ColumnName == "ColumnName")
+                                        //{ 
+
+                                        wsCards.Cells[1, col].Value = Helper.StripString(column.Replace("[", "").Replace("]", ""));
+                                        col++;
+                                        //}
+                                    }
+                                    //}
+                                    while (await reader.ReadAsync())
+                                    {
+                                        //MessageBox.Show("Reading While Loop");
+                                        row++;
+                                        for (col = 1; col <= reader.FieldCount; col++)
+                                        {
+                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1);
+                                        }
+                                    }
+                                    xlPackage.SaveAs(Template);
+                                    xlPackage.Dispose();
+                                break;
+                            }
+                        }
+                    }
+
+                    //MessageBox.Show("Export Table Populated");
+                    _con.Close();
+
+
+                }
+                return true;
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message +"\n\n"+ e.StackTrace);
+                throw new Exception(e.Message);
+            }
+        }
+
 
         public async Task<bool> RunSQLQuery(string query,string ServerName,string dataBaseName,DataTable Table)
         {
@@ -21,9 +142,8 @@ namespace XLConnect.Classes
             }
             else
             {
+                int rowcount = 1;
 
-                //string querystring = query + " FROM [dbo].[" + Table_Combobox.Text+"]";
-                //MessageBox.Show(querystring);
                 string connectionString = @"Data Source=" + ServerName + ";Initial Catalog=" + dataBaseName + ";Integrated Security=True;Timeout=32767";
                 bool queryerror = false;
                 try
@@ -85,11 +205,12 @@ namespace XLConnect.Classes
 
             return true;
         }
-        public async Task<bool> GatherSqlColumns(string server, string database, string tablename, List<string> columns)
+        public async Task<List<string>> GatherSqlColumns(string server, string database, string tablename)
         {
             try
             {
 
+                List<string> columns = new List<string>();
 
                 string connectionString = @"Data Source=" + server + ";Initial Catalog=" + database + ";Integrated Security=True;Timeout=32767";
 
@@ -113,25 +234,15 @@ namespace XLConnect.Classes
                         {
                             columns.Add(column[0].ToString().ToUpper().Trim());
                         }
-
-
-
+                        table.Dispose();
                     }
-
-
                 }
-                return true;
+                return columns;
             }
             catch (Exception e)
             {
                 throw new Exception($"Error gathering Columns\nError Message: {e.Message}");
-
-                return false;
             }
-
-
-
-
         }
         public async Task<bool> CreateDataBase(string server, string database)
         {

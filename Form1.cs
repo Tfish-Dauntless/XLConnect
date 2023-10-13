@@ -379,10 +379,36 @@ namespace XLConnect
 
       
 
-        private void Export_Button_Click(object sender, EventArgs e)
+        private async void Export_Button_Click(object sender, EventArgs e)
         {
-            var exportWindow = new ExcelMate.Export_Window(Table);
-            exportWindow.Show();
+            switch (Data_Tab.SelectedIndex)
+            {
+                case 0:
+                    // MessageBox.Show("Running");
+
+                    await GatherFIleData(Progress);
+                    if (ErrorList.Count > 0)
+                    {
+                        await ExportErrorsToFile();
+                    }
+                    var errorstoadd = ErrorList.Count > 0 ? "d With Errors" : "!";
+                    Error_RichTextBox.Text += $"\n\n\nComplete{errorstoadd}";
+                    Error_RichTextBox.ScrollToCaret();
+                    // MessageBox.Show("Complete!");
+                    
+
+                    break;
+                case 1:
+
+
+                    break;
+                case 2:
+                    var exportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, Query_Box.Text, DBCOMBOBOX.Text, Table_Combobox.Text);
+                    exportWindow.Show();
+
+                    break;
+            }
+            
         }
        
 
