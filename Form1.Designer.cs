@@ -40,9 +40,6 @@ namespace XLConnect
             this.DataBase_ComboBox = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.Data_Tab = new System.Windows.Forms.TabControl();
-            this.Export_Tab = new System.Windows.Forms.TabPage();
-            this.Query_GroupBox = new System.Windows.Forms.GroupBox();
-            this.Query_Box = new System.Windows.Forms.RichTextBox();
             this.Import_Tab = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -61,20 +58,26 @@ namespace XLConnect
             this.File_GroupBox = new System.Windows.Forms.GroupBox();
             this.Import_Textbox = new System.Windows.Forms.TextBox();
             this.OpenFile_Button = new System.Windows.Forms.Button();
+            this.TableDump_tab = new System.Windows.Forms.TabPage();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.Headers_GroupBox = new System.Windows.Forms.GroupBox();
+            this.headers_listbox = new System.Windows.Forms.ListBox();
+            this.orderby_GroupBox = new System.Windows.Forms.GroupBox();
+            this.Export_Tab = new System.Windows.Forms.TabPage();
+            this.Query_GroupBox = new System.Windows.Forms.GroupBox();
+            this.Query_Box = new System.Windows.Forms.RichTextBox();
             this.Action_GroupBox = new System.Windows.Forms.GroupBox();
             this.Clear_Button = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.Export_Button = new System.Windows.Forms.Button();
             this.Run_Button = new System.Windows.Forms.Button();
-            this.TableDump_tab = new System.Windows.Forms.TabPage();
+            this.sortOrder_ListBox = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.Control_GroupBox.SuspendLayout();
             this.Data_Tab.SuspendLayout();
-            this.Export_Tab.SuspendLayout();
-            this.Query_GroupBox.SuspendLayout();
             this.Import_Tab.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -84,6 +87,15 @@ namespace XLConnect
             this.panel6.SuspendLayout();
             this.panel4.SuspendLayout();
             this.File_GroupBox.SuspendLayout();
+            this.TableDump_tab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
+            this.Headers_GroupBox.SuspendLayout();
+            this.orderby_GroupBox.SuspendLayout();
+            this.Export_Tab.SuspendLayout();
+            this.Query_GroupBox.SuspendLayout();
             this.Action_GroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -103,7 +115,7 @@ namespace XLConnect
             this.splitContainer1.Panel2.Controls.Add(this.Data_Tab);
             this.splitContainer1.Panel2.Controls.Add(this.Action_GroupBox);
             this.splitContainer1.Size = new System.Drawing.Size(800, 687);
-            this.splitContainer1.SplitterDistance = 122;
+            this.splitContainer1.SplitterDistance = 79;
             this.splitContainer1.TabIndex = 0;
             // 
             // Control_GroupBox
@@ -119,7 +131,7 @@ namespace XLConnect
             this.Control_GroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Control_GroupBox.Location = new System.Drawing.Point(0, 0);
             this.Control_GroupBox.Name = "Control_GroupBox";
-            this.Control_GroupBox.Size = new System.Drawing.Size(800, 122);
+            this.Control_GroupBox.Size = new System.Drawing.Size(800, 79);
             this.Control_GroupBox.TabIndex = 0;
             this.Control_GroupBox.TabStop = false;
             this.Control_GroupBox.Text = "SQLConnection";
@@ -141,6 +153,8 @@ namespace XLConnect
             this.Table_Combobox.Name = "Table_Combobox";
             this.Table_Combobox.Size = new System.Drawing.Size(359, 21);
             this.Table_Combobox.TabIndex = 6;
+            this.Table_Combobox.SelectedIndexChanged += new System.EventHandler(this.Table_Combobox_SelectedIndexChanged);
+            this.Table_Combobox.SelectedValueChanged += new System.EventHandler(this.Table_Combobox_SelectedValueChanged);
             this.Table_Combobox.Click += new System.EventHandler(this.Table_Combobox_Click);
             // 
             // label2
@@ -206,39 +220,8 @@ namespace XLConnect
             this.Data_Tab.Location = new System.Drawing.Point(0, 0);
             this.Data_Tab.Name = "Data_Tab";
             this.Data_Tab.SelectedIndex = 0;
-            this.Data_Tab.Size = new System.Drawing.Size(800, 449);
+            this.Data_Tab.Size = new System.Drawing.Size(800, 492);
             this.Data_Tab.TabIndex = 1;
-            // 
-            // Export_Tab
-            // 
-            this.Export_Tab.Controls.Add(this.Query_GroupBox);
-            this.Export_Tab.Location = new System.Drawing.Point(4, 22);
-            this.Export_Tab.Name = "Export_Tab";
-            this.Export_Tab.Padding = new System.Windows.Forms.Padding(3);
-            this.Export_Tab.Size = new System.Drawing.Size(792, 423);
-            this.Export_Tab.TabIndex = 0;
-            this.Export_Tab.Text = "Export_Custom_Query";
-            this.Export_Tab.UseVisualStyleBackColor = true;
-            // 
-            // Query_GroupBox
-            // 
-            this.Query_GroupBox.Controls.Add(this.Query_Box);
-            this.Query_GroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Query_GroupBox.Location = new System.Drawing.Point(3, 3);
-            this.Query_GroupBox.Name = "Query_GroupBox";
-            this.Query_GroupBox.Size = new System.Drawing.Size(786, 417);
-            this.Query_GroupBox.TabIndex = 1;
-            this.Query_GroupBox.TabStop = false;
-            this.Query_GroupBox.Text = "Query";
-            // 
-            // Query_Box
-            // 
-            this.Query_Box.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Query_Box.Location = new System.Drawing.Point(3, 16);
-            this.Query_Box.Name = "Query_Box";
-            this.Query_Box.Size = new System.Drawing.Size(780, 398);
-            this.Query_Box.TabIndex = 0;
-            this.Query_Box.Text = "";
             // 
             // Import_Tab
             // 
@@ -246,7 +229,7 @@ namespace XLConnect
             this.Import_Tab.Location = new System.Drawing.Point(4, 22);
             this.Import_Tab.Name = "Import_Tab";
             this.Import_Tab.Padding = new System.Windows.Forms.Padding(3);
-            this.Import_Tab.Size = new System.Drawing.Size(792, 423);
+            this.Import_Tab.Size = new System.Drawing.Size(792, 466);
             this.Import_Tab.TabIndex = 1;
             this.Import_Tab.Text = "Import From File(s)";
             this.Import_Tab.UseVisualStyleBackColor = true;
@@ -258,7 +241,7 @@ namespace XLConnect
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(786, 417);
+            this.panel1.Size = new System.Drawing.Size(786, 460);
             this.panel1.TabIndex = 1;
             // 
             // panel2
@@ -268,7 +251,7 @@ namespace XLConnect
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 46);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(786, 371);
+            this.panel2.Size = new System.Drawing.Size(786, 414);
             this.panel2.TabIndex = 1;
             // 
             // panel3
@@ -277,7 +260,7 @@ namespace XLConnect
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(0, 48);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(786, 323);
+            this.panel3.Size = new System.Drawing.Size(786, 366);
             this.panel3.TabIndex = 1;
             // 
             // Error_RichTextBox
@@ -285,7 +268,7 @@ namespace XLConnect
             this.Error_RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Error_RichTextBox.Location = new System.Drawing.Point(0, 0);
             this.Error_RichTextBox.Name = "Error_RichTextBox";
-            this.Error_RichTextBox.Size = new System.Drawing.Size(786, 323);
+            this.Error_RichTextBox.Size = new System.Drawing.Size(786, 366);
             this.Error_RichTextBox.TabIndex = 0;
             this.Error_RichTextBox.Text = "";
             // 
@@ -413,6 +396,101 @@ namespace XLConnect
             this.OpenFile_Button.UseVisualStyleBackColor = true;
             this.OpenFile_Button.Click += new System.EventHandler(this.OpenFile_Button_Click);
             // 
+            // TableDump_tab
+            // 
+            this.TableDump_tab.Controls.Add(this.splitContainer2);
+            this.TableDump_tab.Location = new System.Drawing.Point(4, 22);
+            this.TableDump_tab.Name = "TableDump_tab";
+            this.TableDump_tab.Padding = new System.Windows.Forms.Padding(3);
+            this.TableDump_tab.Size = new System.Drawing.Size(792, 466);
+            this.TableDump_tab.TabIndex = 2;
+            this.TableDump_tab.Text = "Export Table";
+            this.TableDump_tab.UseVisualStyleBackColor = true;
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(3, 3);
+            this.splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.Headers_GroupBox);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.orderby_GroupBox);
+            this.splitContainer2.Size = new System.Drawing.Size(786, 460);
+            this.splitContainer2.SplitterDistance = 342;
+            this.splitContainer2.TabIndex = 0;
+            // 
+            // Headers_GroupBox
+            // 
+            this.Headers_GroupBox.Controls.Add(this.headers_listbox);
+            this.Headers_GroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Headers_GroupBox.Location = new System.Drawing.Point(0, 0);
+            this.Headers_GroupBox.Name = "Headers_GroupBox";
+            this.Headers_GroupBox.Size = new System.Drawing.Size(342, 460);
+            this.Headers_GroupBox.TabIndex = 0;
+            this.Headers_GroupBox.TabStop = false;
+            this.Headers_GroupBox.Text = "Columns to export";
+            // 
+            // headers_listbox
+            // 
+            this.headers_listbox.AllowDrop = true;
+            this.headers_listbox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.headers_listbox.FormattingEnabled = true;
+            this.headers_listbox.Location = new System.Drawing.Point(3, 16);
+            this.headers_listbox.Name = "headers_listbox";
+            this.headers_listbox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.headers_listbox.Size = new System.Drawing.Size(336, 441);
+            this.headers_listbox.TabIndex = 0;
+            this.headers_listbox.DragDrop += new System.Windows.Forms.DragEventHandler(this.headers_listbox_DragDrop);
+            this.headers_listbox.DragOver += new System.Windows.Forms.DragEventHandler(this.headers_listbox_DragOver);
+            this.headers_listbox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.headers_listbox_MouseDown);
+            // 
+            // orderby_GroupBox
+            // 
+            this.orderby_GroupBox.Controls.Add(this.sortOrder_ListBox);
+            this.orderby_GroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.orderby_GroupBox.Location = new System.Drawing.Point(0, 0);
+            this.orderby_GroupBox.Name = "orderby_GroupBox";
+            this.orderby_GroupBox.Size = new System.Drawing.Size(440, 460);
+            this.orderby_GroupBox.TabIndex = 0;
+            this.orderby_GroupBox.TabStop = false;
+            this.orderby_GroupBox.Text = "Sort Order";
+            // 
+            // Export_Tab
+            // 
+            this.Export_Tab.Controls.Add(this.Query_GroupBox);
+            this.Export_Tab.Location = new System.Drawing.Point(4, 22);
+            this.Export_Tab.Name = "Export_Tab";
+            this.Export_Tab.Padding = new System.Windows.Forms.Padding(3);
+            this.Export_Tab.Size = new System.Drawing.Size(792, 466);
+            this.Export_Tab.TabIndex = 0;
+            this.Export_Tab.Text = "Export_Custom_Query";
+            this.Export_Tab.UseVisualStyleBackColor = true;
+            // 
+            // Query_GroupBox
+            // 
+            this.Query_GroupBox.Controls.Add(this.Query_Box);
+            this.Query_GroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Query_GroupBox.Location = new System.Drawing.Point(3, 3);
+            this.Query_GroupBox.Name = "Query_GroupBox";
+            this.Query_GroupBox.Size = new System.Drawing.Size(786, 460);
+            this.Query_GroupBox.TabIndex = 1;
+            this.Query_GroupBox.TabStop = false;
+            this.Query_GroupBox.Text = "Query";
+            // 
+            // Query_Box
+            // 
+            this.Query_Box.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Query_Box.Location = new System.Drawing.Point(3, 16);
+            this.Query_Box.Name = "Query_Box";
+            this.Query_Box.Size = new System.Drawing.Size(780, 441);
+            this.Query_Box.TabIndex = 0;
+            this.Query_Box.Text = "";
+            // 
             // Action_GroupBox
             // 
             this.Action_GroupBox.Controls.Add(this.Clear_Button);
@@ -420,7 +498,7 @@ namespace XLConnect
             this.Action_GroupBox.Controls.Add(this.Export_Button);
             this.Action_GroupBox.Controls.Add(this.Run_Button);
             this.Action_GroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Action_GroupBox.Location = new System.Drawing.Point(0, 449);
+            this.Action_GroupBox.Location = new System.Drawing.Point(0, 492);
             this.Action_GroupBox.Name = "Action_GroupBox";
             this.Action_GroupBox.Size = new System.Drawing.Size(800, 112);
             this.Action_GroupBox.TabIndex = 0;
@@ -435,7 +513,6 @@ namespace XLConnect
             this.Clear_Button.TabIndex = 3;
             this.Clear_Button.Text = "Clear";
             this.Clear_Button.UseVisualStyleBackColor = true;
-            this.Clear_Button.Visible = false;
             this.Clear_Button.Click += new System.EventHandler(this.Clear_Button_Click);
             // 
             // progressBar1
@@ -454,7 +531,6 @@ namespace XLConnect
             this.Export_Button.TabIndex = 1;
             this.Export_Button.Text = "Export";
             this.Export_Button.UseVisualStyleBackColor = true;
-            this.Export_Button.Visible = false;
             this.Export_Button.Click += new System.EventHandler(this.Export_Button_Click);
             // 
             // Run_Button
@@ -467,15 +543,19 @@ namespace XLConnect
             this.Run_Button.UseVisualStyleBackColor = true;
             this.Run_Button.Click += new System.EventHandler(this.Run_Button_Click);
             // 
-            // TableDump_tab
+            // sortOrder_ListBox
             // 
-            this.TableDump_tab.Location = new System.Drawing.Point(4, 22);
-            this.TableDump_tab.Name = "TableDump_tab";
-            this.TableDump_tab.Padding = new System.Windows.Forms.Padding(3);
-            this.TableDump_tab.Size = new System.Drawing.Size(792, 423);
-            this.TableDump_tab.TabIndex = 2;
-            this.TableDump_tab.Text = "Export Table";
-            this.TableDump_tab.UseVisualStyleBackColor = true;
+            this.sortOrder_ListBox.AllowDrop = true;
+            this.sortOrder_ListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sortOrder_ListBox.FormattingEnabled = true;
+            this.sortOrder_ListBox.Location = new System.Drawing.Point(3, 16);
+            this.sortOrder_ListBox.Name = "sortOrder_ListBox";
+            this.sortOrder_ListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.sortOrder_ListBox.Size = new System.Drawing.Size(434, 441);
+            this.sortOrder_ListBox.TabIndex = 0;
+            this.sortOrder_ListBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.sortOrder_ListBox_DragDrop);
+            this.sortOrder_ListBox.DragOver += new System.Windows.Forms.DragEventHandler(this.sortOrder_ListBox_DragOver);
+            this.sortOrder_ListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.sortOrder_ListBox_MouseDown);
             // 
             // Form1
             // 
@@ -492,8 +572,6 @@ namespace XLConnect
             this.Control_GroupBox.ResumeLayout(false);
             this.Control_GroupBox.PerformLayout();
             this.Data_Tab.ResumeLayout(false);
-            this.Export_Tab.ResumeLayout(false);
-            this.Query_GroupBox.ResumeLayout(false);
             this.Import_Tab.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
@@ -507,6 +585,15 @@ namespace XLConnect
             this.panel4.PerformLayout();
             this.File_GroupBox.ResumeLayout(false);
             this.File_GroupBox.PerformLayout();
+            this.TableDump_tab.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
+            this.Headers_GroupBox.ResumeLayout(false);
+            this.orderby_GroupBox.ResumeLayout(false);
+            this.Export_Tab.ResumeLayout(false);
+            this.Query_GroupBox.ResumeLayout(false);
             this.Action_GroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -552,6 +639,11 @@ namespace XLConnect
         private System.Windows.Forms.RichTextBox Error_RichTextBox;
         private System.Windows.Forms.Button AddDataBase_Button;
         private System.Windows.Forms.TabPage TableDump_tab;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.GroupBox Headers_GroupBox;
+        private System.Windows.Forms.ListBox headers_listbox;
+        private System.Windows.Forms.GroupBox orderby_GroupBox;
+        private System.Windows.Forms.ListBox sortOrder_ListBox;
     }
 }
 

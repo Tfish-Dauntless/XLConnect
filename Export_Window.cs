@@ -22,9 +22,11 @@ namespace ExcelMate
         private string ServerName { get; set; }
         private string DataBaseName { get; set; }
         private string TableName { get; set; }
+        private bool TableOnly { get; set; }
+        private List<string>PassedHeaders { get; set; }
         private SQL_Helper SQLHelper { get; set; }
         private Data_Helper Helper { get; set; }
-        public Export_Window(DataTable datalist,SQL_Helper sqlhelper,Data_Helper helper, string server,string query = null,string database = null, string table = null)
+        public Export_Window(DataTable datalist,SQL_Helper sqlhelper,Data_Helper helper, string server,string query = null,string database = null, string table = null,bool tableOnly = false, List<string> passHeaders = null)
         {
             InitializeComponent();
             Rowsleft = datalist.Rows.Count;
@@ -37,6 +39,8 @@ namespace ExcelMate
             TableName = table;
             SQLHelper = sqlhelper;
             Helper = helper;
+            TableOnly = tableOnly;
+            PassedHeaders = passHeaders;
         }
 
         private async Task<Dictionary<string, string>> GetDBContextFromQuery()
@@ -213,13 +217,13 @@ namespace ExcelMate
 
                 //MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db}\nField: [{DataBaseName}] ");
 
-                if (DataBaseName != null && $"[{DataBaseName.Trim()}]" != adjustedDBContext_Db.Trim())
+                if (!TableOnly && $"[{DataBaseName.Trim()}]" != adjustedDBContext_Db.Trim())
                 {
                     MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db.Trim()}\nField: [{DataBaseName.Trim()}] ");
                     return;
                 }
 
-                if (TableName != null && $"[{TableName.Trim()}]" != adjustedDBContext_Table.Trim())
+                if (!TableOnly && $"[{TableName.Trim()}]" != adjustedDBContext_Table.Trim())
                 {
                     MessageBox.Show($"Table in Query and Table Field do not match.\nQuery: {adjustedDBContext_Table.Trim()}\nField:   [{TableName.Trim()}] ");
                     return;
@@ -250,12 +254,20 @@ namespace ExcelMate
                     delim = '\u0014';
                     qual = 'þ';
                 }
-
-                await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[","").Replace("]",""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(),ExportType_ComboBox.Text,delim,qual);
+                if (TableOnly)
+                {
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), PassedHeaders, ExportType_ComboBox.Text, delim, qual);
+                }
+                else
+                {
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual);
+                }
+                
 
                 MessageBox.Show("Complete");
                 this.DialogResult = DialogResult.OK;
                 this.Close();
+                
             }
             catch(Exception em)
             {
