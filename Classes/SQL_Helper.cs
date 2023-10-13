@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using Sylvan.Data;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -15,7 +17,7 @@ namespace XLConnect.Classes
     {
         Data_Helper Helper {  get; set; }
        
-        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,List<string>headers,string exportType,char delim,char qualifier)
+        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,string tableName,List<string>headers,string exportType,char delim,char qualifier)
         {
             try
             {
@@ -72,12 +74,45 @@ namespace XLConnect.Classes
                                             }
                                             tw.Write("\r\n");
                                         }
-
                                     }
                                     break;
                                 case "xlsx":
+                                    var Template = new FileInfo(exportLocation);
+                                    var xlPackage = new ExcelPackage(Template);
+                                    var wsCards = xlPackage.Workbook.Worksheets.Add(tableName);
+                                    int row = 1, col = 1;
 
-                                    break;
+
+
+                                    //foreach (DataRow rw in schemaTable.Rows)
+                                    //{
+                                    // Write the headers to the first row
+                                    //var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
+                                    foreach (var column in headers)
+                                    {
+                                        
+                                        // Condition Will only be required if you want to write 
+                                        // specific column names
+                                        //if (column.ColumnName == "ColumnName")
+                                        //{ 
+
+                                        wsCards.Cells[1, col].Value = Helper.StripString(column.Replace("[", "").Replace("]", ""));
+                                        col++;
+                                        //}
+                                    }
+                                    //}
+                                    while (await reader.ReadAsync())
+                                    {
+                                        //MessageBox.Show("Reading While Loop");
+                                        row++;
+                                        for (col = 1; col <= reader.FieldCount; col++)
+                                        {
+                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1);
+                                        }
+                                    }
+                                    xlPackage.SaveAs(Template);
+                                    xlPackage.Dispose();
+                                break;
                             }
                         }
                     }
@@ -91,7 +126,7 @@ namespace XLConnect.Classes
             }
             catch(Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message +"\n\n"+ e.StackTrace);
                 throw new Exception(e.Message);
             }
         }

@@ -202,6 +202,7 @@ namespace ExcelMate
                 //    { "Columns","" }
                 //var sqlColumns = await SQLHelper.GatherSqlColumns();
                 var dbcontext = GetDBContextFromQuery().Result;
+
                 var adjustedDBContext_Db = dbcontext["DataBaseName"].Contains("[") ? dbcontext["DataBaseName"] : $"[{dbcontext["DataBaseName"]}]";
                 var adjustedDBContext_Table = dbcontext["TableName"].Contains("[") ? dbcontext["TableName"] : $"[{dbcontext["TableName"]}]";
 
@@ -223,8 +224,12 @@ namespace ExcelMate
                 }
 
                 var exportname = ExportLocation_TextBox.Text;
+                var delim = Delimiter_TextBox.Text == null || Delimiter_TextBox.Text == String.Empty? '\t' : Delimiter_TextBox.Text.ToCharArray().First();
+                var qual = Qualifier_TextBox.Text == null || Qualifier_TextBox.Text == String.Empty ? '\"': Qualifier_TextBox.Text.ToCharArray().First();
 
-                if(ExportType_ComboBox.Text == "CSV")
+
+               
+                if (ExportType_ComboBox.Text == "CSV")
                 {
                     exportname = ExportLocation_TextBox.Text.Replace(".Xlsx", ".csv");
                 }
@@ -232,8 +237,13 @@ namespace ExcelMate
                 {
                     exportname = ExportLocation_TextBox.Text.Replace(".Xlsx", ".txt");
                 }
+                if (ExportType_ComboBox.Text == "DAT")
+                {
+                    exportname = ExportLocation_TextBox.Text.Replace(".Xlsx", ".txt");
+                }
 
-                await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, DataBaseName, dbcontext["Columns"].Split(',').ToList(),ExportType_ComboBox.Text , Delimiter_TextBox.Text.ToCharArray().First(), Qualifier_TextBox.Text.ToCharArray().First());
+
+                await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[","").Replace("]",""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(),ExportType_ComboBox.Text,delim,qual);
 
 
                 //int toSkip = 0;
@@ -272,13 +282,16 @@ namespace ExcelMate
 
                 //}
                 // await ExportToExcel(ExportLocation_TextBox.Text.Replace("_Delivery.Xlsx", "_RoundTracking.Xlsx"), "RoundTracking");
+
+
+
                 MessageBox.Show("Complete");
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch(Exception em)
             {
-                MessageBox.Show(em.Message);
+                MessageBox.Show(em.Message +"\n\n" + em.StackTrace);
             }
         }
         private void MaxRowSize_CheckBox_CheckedChanged(object sender, EventArgs e)
