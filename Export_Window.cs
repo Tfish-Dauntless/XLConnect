@@ -152,8 +152,8 @@ namespace ExcelMate
         private void ExportLocation_Button_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "Excel (*.Xlsx)|*.Xlsx|Comma Seperated (*.csv)|*.csv|Text (*.txt)|*.txt";
-            saveFile.DefaultExt = "Xlsx";
+            saveFile.Filter = "Excel (*.Xlsx)|*.Xlsx|Comma Seperated (*.csv)|*.csv|Text (*.txt)|*.txt|dat (*.dat)|*.dat";
+            saveFile.DefaultExt = "xlsx";
             
             saveFile.AddExtension = true;
             saveFile.FileName = DateTime.Now.ToString("yyyyMMdd") + "_REPLACEWITHCASENAME_Delivery";
@@ -163,6 +163,9 @@ namespace ExcelMate
                 if (!Delimiter_TextBox.Enabled)
                 {
                     Delimiter_TextBox.Enabled = true;
+                   
+
+
                 }
                 if (!Qualifier_TextBox.Enabled)
                 {
@@ -187,6 +190,10 @@ namespace ExcelMate
                         Delimiter_TextBox.Text = "|";
                         Qualifier_TextBox.Text = "^";
                         break;
+                    case "DAT":
+                        Delimiter_TextBox.Enabled = false;
+                        Qualifier_TextBox.Enabled = false;
+                        break;
                 }
             }
 
@@ -201,12 +208,14 @@ namespace ExcelMate
                 //    { "TableName","" },
                 //    { "Columns","" }
                 //var sqlColumns = await SQLHelper.GatherSqlColumns();
+
                 var dbcontext = GetDBContextFromQuery().Result;
 
                 var adjustedDBContext_Db = dbcontext["DataBaseName"].Contains("[") ? dbcontext["DataBaseName"] : $"[{dbcontext["DataBaseName"]}]";
                 var adjustedDBContext_Table = dbcontext["TableName"].Contains("[") ? dbcontext["TableName"] : $"[{dbcontext["TableName"]}]";
 
                 //MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db}\nField: [{DataBaseName}] ");
+
                 if (DataBaseName != null && $"[{DataBaseName.Trim()}]" != adjustedDBContext_Db.Trim())
                 {
                     MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db.Trim()}\nField: [{DataBaseName.Trim()}] ");
@@ -227,19 +236,19 @@ namespace ExcelMate
                 var delim = Delimiter_TextBox.Text == null || Delimiter_TextBox.Text == String.Empty? '\t' : Delimiter_TextBox.Text.ToCharArray().First();
                 var qual = Qualifier_TextBox.Text == null || Qualifier_TextBox.Text == String.Empty ? '\"': Qualifier_TextBox.Text.ToCharArray().First();
 
-
-               
                 if (ExportType_ComboBox.Text == "CSV")
                 {
-                    exportname = ExportLocation_TextBox.Text.Replace(".Xlsx", ".csv");
+                    exportname = ExportLocation_TextBox.Text.Replace(".xlsx", ".csv");
                 }
                 if (ExportType_ComboBox.Text == "TXT")
                 {
-                    exportname = ExportLocation_TextBox.Text.Replace(".Xlsx", ".txt");
+                    exportname = ExportLocation_TextBox.Text.Replace(".xlsx", ".txt");
                 }
                 if (ExportType_ComboBox.Text == "DAT")
                 {
-                    exportname = ExportLocation_TextBox.Text.Replace(".Xlsx", ".txt");
+                    exportname = ExportLocation_TextBox.Text.Replace(".xlsx", ".dat");
+                    delim = '\u0014';
+                    qual = 'þ';
                 }
 
 
@@ -341,6 +350,10 @@ namespace ExcelMate
                 case "TXT":
                     Delimiter_TextBox.Text = "|";
                     Qualifier_TextBox.Text = "^";
+                    break;
+                case "DAT":
+                    Delimiter_TextBox.Text = "\u0014";
+                    Qualifier_TextBox.Text = "þ";
                     break;
             }
         }

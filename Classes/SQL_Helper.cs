@@ -48,6 +48,7 @@ namespace XLConnect.Classes
                         {
                             switch (exportType.ToLower())
                             {
+                                case "dat":
                                 case "txt":
                                 case "csv":
                                     using (var tw = File.CreateText(exportLocation))
