@@ -384,12 +384,6 @@ namespace XLConnect
             switch (Data_Tab.SelectedIndex)
             {
                 case 0:
-                    var exportWindow = new ExcelMate.Export_Window(Table, SQLHELPER,DataHelper, Server_TextBox.Text, Query_Box.Text, DBCOMBOBOX.Text, Table_Combobox.Text);
-                    exportWindow.Show();
-
-                    break;
-                case 1:
-
                     // MessageBox.Show("Running");
 
                     await GatherFIleData(Progress);
@@ -401,6 +395,17 @@ namespace XLConnect
                     Error_RichTextBox.Text += $"\n\n\nComplete{errorstoadd}";
                     Error_RichTextBox.ScrollToCaret();
                     // MessageBox.Show("Complete!");
+                    
+
+                    break;
+                case 1:
+
+
+                    break;
+                case 2:
+                    var exportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, Query_Box.Text, DBCOMBOBOX.Text, Table_Combobox.Text);
+                    exportWindow.Show();
+
                     break;
             }
             

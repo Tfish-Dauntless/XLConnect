@@ -163,9 +163,6 @@ namespace ExcelMate
                 if (!Delimiter_TextBox.Enabled)
                 {
                     Delimiter_TextBox.Enabled = true;
-                   
-
-
                 }
                 if (!Qualifier_TextBox.Enabled)
                 {
@@ -221,11 +218,13 @@ namespace ExcelMate
                     MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db.Trim()}\nField: [{DataBaseName.Trim()}] ");
                     return;
                 }
+
                 if (TableName != null && $"[{TableName.Trim()}]" != adjustedDBContext_Table.Trim())
                 {
                     MessageBox.Show($"Table in Query and Table Field do not match.\nQuery: {adjustedDBContext_Table.Trim()}\nField:   [{TableName.Trim()}] ");
                     return;
                 }
+
                 if(ExportLocation_TextBox.Text == null || ExportLocation_TextBox.Text == String.Empty)
                 {
                     MessageBox.Show($"Please provide an export location!");
@@ -235,6 +234,7 @@ namespace ExcelMate
                 var exportname = ExportLocation_TextBox.Text;
                 var delim = Delimiter_TextBox.Text == null || Delimiter_TextBox.Text == String.Empty? '\t' : Delimiter_TextBox.Text.ToCharArray().First();
                 var qual = Qualifier_TextBox.Text == null || Qualifier_TextBox.Text == String.Empty ? '\"': Qualifier_TextBox.Text.ToCharArray().First();
+
 
                 if (ExportType_ComboBox.Text == "CSV")
                 {
@@ -251,48 +251,7 @@ namespace ExcelMate
                     qual = 'þ';
                 }
 
-
                 await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[","").Replace("]",""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(),ExportType_ComboBox.Text,delim,qual);
-
-
-                //int toSkip = 0;
-                //int num = 1;
-                //int MaxRowSize = 500000;
-                //if (MaxRowSize_CheckBox.Checked)
-                //{
-                //    MaxRowSize = Decimal.ToInt32(RowsPerSheet_NumBox.Value);
-                //}
-
-                //if (TotalRows > MaxRowSize)
-                //{
-                //    while (Rowsleft > 0)
-                //    {
-                //        if (Rowsleft < MaxRowSize)
-                //        {
-                //            //MessageBox.Show("Im Here to export a large amount");
-                //            await ExportToExcel(ExportLocation_TextBox.Text.Replace(".Xlsx", "") + "_" + num + ".Xlsx", "ExcelCap", Rowsleft, toSkip);
-
-                //            break;
-                //        }
-                //        else
-                //        {
-                //            await ExportToExcel(ExportLocation_TextBox.Text.Replace(".Xlsx", "") + "_" + num + ".Xlsx", "ExcelCap", MaxRowSize, toSkip);
-                //        }
-                //        num += 1;
-                //        toSkip += MaxRowSize;
-                //        Rowsleft -= MaxRowSize;
-                //    }
-
-                //}
-                //else
-                //{
-
-                //    await ExportToExcel(ExportLocation_TextBox.Text);
-
-                //}
-                // await ExportToExcel(ExportLocation_TextBox.Text.Replace("_Delivery.Xlsx", "_RoundTracking.Xlsx"), "RoundTracking");
-
-
 
                 MessageBox.Show("Complete");
                 this.DialogResult = DialogResult.OK;

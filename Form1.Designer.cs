@@ -66,6 +66,7 @@ namespace XLConnect
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.Export_Button = new System.Windows.Forms.Button();
             this.Run_Button = new System.Windows.Forms.Button();
+            this.TableDump_tab = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -198,8 +199,9 @@ namespace XLConnect
             // 
             // Data_Tab
             // 
-            this.Data_Tab.Controls.Add(this.Export_Tab);
             this.Data_Tab.Controls.Add(this.Import_Tab);
+            this.Data_Tab.Controls.Add(this.TableDump_tab);
+            this.Data_Tab.Controls.Add(this.Export_Tab);
             this.Data_Tab.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Data_Tab.Location = new System.Drawing.Point(0, 0);
             this.Data_Tab.Name = "Data_Tab";
@@ -215,7 +217,7 @@ namespace XLConnect
             this.Export_Tab.Padding = new System.Windows.Forms.Padding(3);
             this.Export_Tab.Size = new System.Drawing.Size(792, 423);
             this.Export_Tab.TabIndex = 0;
-            this.Export_Tab.Text = "Query_DB";
+            this.Export_Tab.Text = "Export_Custom_Query";
             this.Export_Tab.UseVisualStyleBackColor = true;
             // 
             // Query_GroupBox
@@ -465,6 +467,16 @@ namespace XLConnect
             this.Run_Button.UseVisualStyleBackColor = true;
             this.Run_Button.Click += new System.EventHandler(this.Run_Button_Click);
             // 
+            // TableDump_tab
+            // 
+            this.TableDump_tab.Location = new System.Drawing.Point(4, 22);
+            this.TableDump_tab.Name = "TableDump_tab";
+            this.TableDump_tab.Padding = new System.Windows.Forms.Padding(3);
+            this.TableDump_tab.Size = new System.Drawing.Size(792, 423);
+            this.TableDump_tab.TabIndex = 2;
+            this.TableDump_tab.Text = "Export Table";
+            this.TableDump_tab.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -539,6 +551,7 @@ namespace XLConnect
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.RichTextBox Error_RichTextBox;
         private System.Windows.Forms.Button AddDataBase_Button;
+        private System.Windows.Forms.TabPage TableDump_tab;
     }
 }
 
