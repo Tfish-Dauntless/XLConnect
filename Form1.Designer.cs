@@ -63,6 +63,7 @@ namespace XLConnect
             this.Headers_GroupBox = new System.Windows.Forms.GroupBox();
             this.headers_listbox = new System.Windows.Forms.ListBox();
             this.orderby_GroupBox = new System.Windows.Forms.GroupBox();
+            this.sortOrder_ListBox = new System.Windows.Forms.ListBox();
             this.Export_Tab = new System.Windows.Forms.TabPage();
             this.Query_GroupBox = new System.Windows.Forms.GroupBox();
             this.Query_Box = new System.Windows.Forms.RichTextBox();
@@ -71,7 +72,6 @@ namespace XLConnect
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.Export_Button = new System.Windows.Forms.Button();
             this.Run_Button = new System.Windows.Forms.Button();
-            this.sortOrder_ListBox = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -447,6 +447,7 @@ namespace XLConnect
             this.headers_listbox.TabIndex = 0;
             this.headers_listbox.DragDrop += new System.Windows.Forms.DragEventHandler(this.headers_listbox_DragDrop);
             this.headers_listbox.DragOver += new System.Windows.Forms.DragEventHandler(this.headers_listbox_DragOver);
+            this.headers_listbox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.headers_listbox_MouseDoubleClick);
             this.headers_listbox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.headers_listbox_MouseDown);
             // 
             // orderby_GroupBox
@@ -459,6 +460,20 @@ namespace XLConnect
             this.orderby_GroupBox.TabIndex = 0;
             this.orderby_GroupBox.TabStop = false;
             this.orderby_GroupBox.Text = "Sort Order";
+            // 
+            // sortOrder_ListBox
+            // 
+            this.sortOrder_ListBox.AllowDrop = true;
+            this.sortOrder_ListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sortOrder_ListBox.FormattingEnabled = true;
+            this.sortOrder_ListBox.Location = new System.Drawing.Point(3, 16);
+            this.sortOrder_ListBox.Name = "sortOrder_ListBox";
+            this.sortOrder_ListBox.Size = new System.Drawing.Size(434, 441);
+            this.sortOrder_ListBox.TabIndex = 0;
+            this.sortOrder_ListBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.sortOrder_ListBox_DragDrop);
+            this.sortOrder_ListBox.DragOver += new System.Windows.Forms.DragEventHandler(this.sortOrder_ListBox_DragOver);
+            this.sortOrder_ListBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.sortOrder_ListBox_KeyUp);
+            this.sortOrder_ListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.sortOrder_ListBox_MouseDown);
             // 
             // Export_Tab
             // 
@@ -542,20 +557,6 @@ namespace XLConnect
             this.Run_Button.Text = "Run";
             this.Run_Button.UseVisualStyleBackColor = true;
             this.Run_Button.Click += new System.EventHandler(this.Run_Button_Click);
-            // 
-            // sortOrder_ListBox
-            // 
-            this.sortOrder_ListBox.AllowDrop = true;
-            this.sortOrder_ListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sortOrder_ListBox.FormattingEnabled = true;
-            this.sortOrder_ListBox.Location = new System.Drawing.Point(3, 16);
-            this.sortOrder_ListBox.Name = "sortOrder_ListBox";
-            this.sortOrder_ListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.sortOrder_ListBox.Size = new System.Drawing.Size(434, 441);
-            this.sortOrder_ListBox.TabIndex = 0;
-            this.sortOrder_ListBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.sortOrder_ListBox_DragDrop);
-            this.sortOrder_ListBox.DragOver += new System.Windows.Forms.DragEventHandler(this.sortOrder_ListBox_DragOver);
-            this.sortOrder_ListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.sortOrder_ListBox_MouseDown);
             // 
             // Form1
             // 

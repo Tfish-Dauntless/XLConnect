@@ -499,8 +499,18 @@ namespace XLConnect
 
         private void headers_listbox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (this.headers_listbox.SelectedItem == null) return;
-            this.headers_listbox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Move);
+            if (e.Button == MouseButtons.Left && e.Clicks == 1)
+            {
+                if (this.headers_listbox.SelectedItem == null) return;
+                this.headers_listbox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Move);
+            }
+            if (e.Button == MouseButtons.Right && e.Clicks == 1)
+            {
+                if (this.headers_listbox.SelectedItem == null) return;
+                this.sortOrder_ListBox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Copy);
+            }
+
+            //this.sortOrder_ListBox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Copy);
         }
 
         private void headers_listbox_DragOver(object sender, DragEventArgs e)
@@ -527,14 +537,7 @@ namespace XLConnect
 
         private void sortOrder_ListBox_DragOver(object sender, DragEventArgs e)
         {
-            if (this.sortOrder_ListBox.Items.Contains(e.Data.ToString()))
-            {
-                e.Effect = DragDropEffects.Move;
-            }
-            else
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
+            e.Effect = DragDropEffects.Move;
         }
 
         private void sortOrder_ListBox_DragDrop(object sender, DragEventArgs e)
@@ -543,7 +546,7 @@ namespace XLConnect
             int index = this.sortOrder_ListBox.IndexFromPoint(point);
             if (index < 0) index = this.sortOrder_ListBox.Items.Count - 1;
             object eventItem = e.Data.GetData(typeof(String));
-            //MessageBox.Show(eventItem);
+            //MessageBox.Show($"Event Item: {eventItem}\neventData: {e.Data.GetData(typeof(String))}");
             this.sortOrder_ListBox.Items.Remove(eventItem);
             this.sortOrder_ListBox.Items.Insert(index, eventItem);
         }
@@ -568,5 +571,35 @@ namespace XLConnect
                 headers_listbox.Items.Add(column);
             }
         }
+
+
+
+        private void headers_listbox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = this.headers_listbox.IndexFromPoint(e.Location);
+            if (!sortOrder_ListBox.Items.Contains(headers_listbox.Items[index]))
+            {
+                sortOrder_ListBox.Items.Add(headers_listbox.Items[index]);
+            }
+        }
+
+        private void sortOrder_ListBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            //MessageBox.Show($"KeyCode: {e.KeyCode.ToString()}\nKeyValue: {e.KeyValue.ToString()}\n SupressentKey: {e.SuppressKeyPress}");
+            if(e.KeyCode == Keys.Delete)
+            {
+                //MessageBox.Show($"KeyCode: {e.KeyCode.ToString()}\nKeyValue: {e.KeyValue.ToString()}\n SupressentKey: {e.SuppressKeyPress}\nSelectedIndex {sortOrder_ListBox.SelectedIndex}");
+                if (sortOrder_ListBox.SelectedIndex < 0)
+                {
+                    MessageBox.Show($"KeyCode: {e.KeyCode.ToString()}\nKeyValue: {e.KeyValue.ToString()}\n SupressentKey: {e.SuppressKeyPress}\nSelectedIndex {sortOrder_ListBox.SelectedIndex}");
+                    return;
+                }
+
+                var index = sortOrder_ListBox.SelectedIndex;
+                sortOrder_ListBox.Items.RemoveAt(index);
+            }
+            
+        }
     }
+    
 }
