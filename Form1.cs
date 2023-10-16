@@ -149,7 +149,14 @@ namespace XLConnect
             }
             return haserror;
         }
-
+        /// <summary>
+        ///  Takes in either a ExcelDataReader or a CSVData Reader. Ittereates through the reader to collect each row as a string array and adds it to the overall Array List. Exclude Empty rows.
+        /// </summary>
+        /// <param name="edr">ExcelDataReader</param> 
+        /// <param name="csv">CsvDataReader</param> 
+        /// <returns>List<string[]>Total Rows in file</returns> 
+        /// <exception cref="Exception"></exception>
+        
         private async Task<bool> GatherFIleData(IProgress<ProgressBarHelper> progress)
         {
             try
@@ -177,7 +184,78 @@ namespace XLConnect
 
                         switch (finfo.Extension.ToLower())
                         {
+                            case ".dat":
+                                var datfilelines = File.ReadAllLines(finfo.FullName).ToList();
+                                try
+                                {
+                                    var delimiter = await DataHelper.DetermineFileDelimiter(finfo.Extension, datfilelines);
+                                    if (delimiter == "unknown" || delimiter == null)
+                                    {
+                                        throw new Exception("Unable to determine Delimiter");
+                                    }
+                                    var rows = await DataHelper.GetWorkSheetdataAsList(null, filelines: datfilelines, delimiter: "\u0014",quote: "þ");
+                                    var dt = await DataHelper.FillDataTableFromList(rows, headerrow, SkipFirstRow_CheckBox.Checked);
+                                    var tablename = $"{finfo.Name.Replace(finfo.Extension, "")}_{DateTime.Now.Ticks}";
+                                    var dtheaders = new List<string>();
+                                    foreach (var column in dt.Columns)
+                                    {
+
+                                        dtheaders.Add(column.ToString());
+                                    }
+                                    await SQLHELPER.CreateTable(ServerName, DataBaseName, tablename, dtheaders, true);
+                                    await DataHelper.InsertProcessedData(dt, ServerName, DataBaseName, tablename);
+
+                                    dt.Dispose();
+                                    dtheaders.Clear();
+                                }
+                                catch (Exception e)
+                                {
+                                    this.Invoke(new MethodInvoker(delegate
+                                    {
+                                        Error_RichTextBox.Text += $"\n Error: {finfo.Name}\n Message: {e.Message}";
+                                        Error_RichTextBox.ScrollToCaret();
+                                        ErrorList.Add(finfo.Name, e.Message);
+
+                                    }));
+
+                                }
+                                break;
                             case ".txt":
+                                var txtfilelines = File.ReadAllLines(finfo.FullName).ToList();
+                                try
+                                {
+                                    var delimiter = await DataHelper.DetermineFileDelimiter(finfo.Extension, txtfilelines);
+                                    if (delimiter == "unknown" || delimiter == null)
+                                    {
+                                        throw new Exception("Unable to determine Delimiter");
+                                    }
+                                    var rows = await DataHelper.GetWorkSheetdataAsList(null, filelines: txtfilelines, delimiter: "|", quote: "þ");
+                                    var dt = await DataHelper.FillDataTableFromList(rows, headerrow, SkipFirstRow_CheckBox.Checked);
+                                    var tablename = $"{finfo.Name.Replace(finfo.Extension, "")}_{DateTime.Now.Ticks}";
+                                    var dtheaders = new List<string>();
+                                    foreach (var column in dt.Columns)
+                                    {
+
+                                        dtheaders.Add(column.ToString());
+                                    }
+                                    await SQLHELPER.CreateTable(ServerName, DataBaseName, tablename, dtheaders, true);
+                                    await DataHelper.InsertProcessedData(dt, ServerName, DataBaseName, tablename);
+
+                                    dt.Dispose();
+                                    dtheaders.Clear();
+                                }
+                                catch (Exception e)
+                                {
+                                    this.Invoke(new MethodInvoker(delegate
+                                    {
+                                        Error_RichTextBox.Text += $"\n Error: {finfo.Name}\n Message: {e.Message}";
+                                        Error_RichTextBox.ScrollToCaret();
+                                        ErrorList.Add(finfo.Name, e.Message);
+
+                                    }));
+
+                                }
+                                break;
                             case ".tsv":
                                 var filelines = File.ReadAllLines(finfo.FullName).ToList();
                                 try
@@ -187,8 +265,8 @@ namespace XLConnect
                                     {
                                         throw new Exception("Unable to determine Delimiter");
                                     }
-                                    var rows = await DataHelper.GetWorkSheetdataAsList(null, filelines: filelines, delimiter: delimiter);
-                                    var dt = await DataHelper.FillDataTableFromList(rows, headerrow);
+                                    var rows = await DataHelper.GetWorkSheetdataAsList(null, filelines: filelines, delimiter: "\t", quote: "");
+                                    var dt = await DataHelper.FillDataTableFromList(rows, headerrow, SkipFirstRow_CheckBox.Checked);
                                     var tablename = $"{finfo.Name.Replace(finfo.Extension, "")}_{DateTime.Now.Ticks}";
                                     var dtheaders = new List<string>();
                                     foreach (var column in dt.Columns)
@@ -218,14 +296,16 @@ namespace XLConnect
                             case ".csv":
                                 var opts = new CsvDataReaderOptions
                                 {
-                                    HasHeaders = false
+                                    HasHeaders = false,
+                                    Quote = '\"',
+                                    Delimiter = ','
                                 };
                                 using (var csv = CsvDataReader.Create(finfo.FullName, opts))
                                 {
                                     try
                                     {
                                         var rows = await DataHelper.GetWorkSheetdataAsList(null, csv: csv);
-                                        var dt = await DataHelper.FillDataTableFromList(rows, headerrow);
+                                        var dt = await DataHelper.FillDataTableFromList(rows, headerrow, SkipFirstRow_CheckBox.Checked);
                                         var tablename = $"{finfo.Name.Replace(finfo.Extension, "")}_{DateTime.Now.Ticks}";
                                         var dtheaders = new List<string>();
                                         foreach (var column in dt.Columns)
@@ -254,18 +334,38 @@ namespace XLConnect
                                 }
                                 break;
                             case ".xls":
+
+
+
+
+                                break;
                             case ".xlsx":
                             case ".xlsm":
                             case ".xlsb":
-
-                                var options = new ExcelDataReaderOptions { Schema = ExcelSchema.NoHeaders, GetErrorAsNull = true, ReadHiddenWorksheets = true, DateTimeFormat = "MM/DD/YYYY" };
+                                
                                 var currentSheetName = "";
-                                using (Sylvan.Data.Excel.ExcelDataReader edr = Sylvan.Data.Excel.ExcelDataReader.Create(finfo.FullName, options))
+                                using (var package = new ExcelPackage())
                                 {
+                                    package.Workbook.Protection.LockStructure = false;
 
-                                    do
+                                    using (var stream = System.IO.File.OpenRead(finfo.FullName))
                                     {
-                                        currentSheetName = edr.WorksheetName;
+                                        try
+                                        {
+                                            await package.LoadAsync(stream);
+                                        }
+                                        catch (Exception E)
+                                        {
+                                            //MessageBox.Show("File Timed out, Moving to Failover Method\nMessage:" + E.Message);
+                                            throw new Exception(E.Message);
+                                        }
+
+                                    }
+                                    int curfile = 1;
+                                    var TotalCountOfSheets = package.Workbook.Worksheets.Count();
+                                    foreach (var worksheet in package.Workbook.Worksheets)
+                                    {
+                                        currentSheetName = worksheet.Name;
                                         try
                                         {
                                             //if (!edr.HasRows)
@@ -273,10 +373,10 @@ namespace XLConnect
                                             //    throw new Exception("Worksheet is empty or missing");
                                             //}
 
-                                            var rows = await DataHelper.GetWorkSheetdataAsList(edr);
-                                            var dt = await DataHelper.FillDataTableFromList(rows, headerrow);
+                                            var rows = await DataHelper.GetWorkSheetdataAsList(null, Ep_Worksheet: worksheet);
+                                            var dt = await DataHelper.FillDataTableFromList(rows, headerrow-1, SkipFirstRow_CheckBox.Checked);
 
-                                            var tablename = $"{finfo.Name.Replace(finfo.Extension, "")}_{edr.WorksheetName}_{DateTime.Now.Ticks}";
+                                            var tablename = $"{finfo.Name.Replace(finfo.Extension, "")}_{worksheet.Name}_{DateTime.Now.Ticks}";
                                             var dtheaders = new List<string>();
                                             foreach (var column in dt.Columns)
                                             {
@@ -301,14 +401,14 @@ namespace XLConnect
                                         }
 
                                     }
-                                    while (await edr.NextResultAsync());
-
                                 }
+                                    
+                               
                                 break;
                         }
                         newFilenames.Add(i.ToString());
                         progressHelper.files = newFilenames;
-                        progressHelper.Percentage = (i) * 100 / totalfiles - 1;
+                        progressHelper.Percentage = (i) * 100 / totalfiles ;
                         //toshow = (int.Parse(roundcount)) * 100 / totalcount;
                         progress.Report(progressHelper);
                         i += 1;
@@ -431,7 +531,7 @@ namespace XLConnect
                     //var orderby = sortOrder_ListBox.Items.Count <= 0 ? "" : $"  ORDER BY [{String.Join("],[", sortOrder_ListBox.Items)}]";
                     var query = $"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders)} FROM {Table_Combobox.Text} {orderby}";
 
-                    MessageBox.Show(query);
+                    //MessageBox.Show(query);
                     var TableexportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, query, DBCOMBOBOX.Text, Table_Combobox.Text,true, RawHeaders);
                     TableexportWindow.Show();
                     if(TableexportWindow.DialogResult == DialogResult.OK || TableexportWindow.DialogResult == DialogResult.Cancel)
