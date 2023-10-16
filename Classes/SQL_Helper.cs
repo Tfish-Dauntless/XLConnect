@@ -36,9 +36,9 @@ namespace XLConnect.Classes
                     _con.Open();
 
                     //MessageBox.Show($"Connection Open\nnew FilePath: {exportLocation}");
-                    //MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}");
+                    //MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}\nHeaders: {String.Join(",", headers)}");
 
-                    // MessageBox.Show("Created Export Table");
+                    MessageBox.Show(query);
 
                     using (SqlCommand _cmd2 = new SqlCommand(query, _con))
                     {

@@ -449,6 +449,7 @@ namespace XLConnect
             this.headers_listbox.DragOver += new System.Windows.Forms.DragEventHandler(this.headers_listbox_DragOver);
             this.headers_listbox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.headers_listbox_MouseDoubleClick);
             this.headers_listbox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.headers_listbox_MouseDown);
+            this.headers_listbox.MouseHover += new System.EventHandler(this.headers_listbox_MouseHover);
             // 
             // orderby_GroupBox
             // 
@@ -565,6 +566,7 @@ namespace XLConnect
             this.ClientSize = new System.Drawing.Size(800, 687);
             this.Controls.Add(this.splitContainer1);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);

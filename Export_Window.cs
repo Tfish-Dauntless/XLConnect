@@ -33,7 +33,7 @@ namespace ExcelMate
             TotalRows = datalist.Rows.Count;
             DataList = datalist;
             ExportCount_Label.Text = "Empty";//datalist == null ? "0" : DataList.Rows.Count.ToString()
-            Query = query.Replace("\n", "").Replace(Environment.NewLine, "");
+            Query = query.Replace("\n", " ").Replace(Environment.NewLine, " ");
             ServerName = server;
             DataBaseName = database;
             TableName = table;
@@ -64,11 +64,30 @@ namespace ExcelMate
                 Regex scehmaRegex = new Regex(@"FROM.+?\.(?<schema>.*)\.");
                 Regex tableNameRegex = new Regex(@"FROM.*?\..*?\.(?<tablename>.*?)(?:\n|WHERE|$)");
                 Regex fromLineRegex = new Regex(@"FROM(?<from>.*?)(?:\n|WHERE|$)");
+                Regex innerColumnRegex = new Regex(@"(?<innerColumn>\[[^\[]+?)$");
 
                 Match columnMatch = Columnregex.Match(Query);
                 Match fromLineMatch = fromLineRegex.Match(Query);
-                var comma = ',';
-                dbContext["Columns"] = Helper.StripString(columnMatch.Groups["columns"].Value).Replace(",",",");
+
+                var columns = columnMatch.Groups["columns"].Value.Replace(",", ",").Split(',').ToList();
+
+                List<string>Cols = new List<string>();
+                for(var c = 0; c < columns.Count; c++)
+                {
+
+                    Match innerColumnMatch = innerColumnRegex.Match(columns[c]);
+                    Group innerColumnGroup = innerColumnMatch.Groups["innerColumn"];
+
+                   // innerColumnGroup.Value.Replace("[", "").Replace("]", "");
+                    //MessageBox.Show($"Original: {columns[c]}\nsliced: {innerColumnGroup.Value}");
+                    if (!Cols.Contains(innerColumnGroup.Value.Replace("[", "").Replace("]", "")))
+                    {
+                        Cols.Add(innerColumnGroup.Value.Replace("[", "").Replace("]", ""));
+                    }
+                }
+
+                dbContext["Columns"] = String.Join(",", Cols);
+
                 Group fromLine = fromLineMatch.Groups["from"];
 
                 Match dataBaseMatch;
@@ -119,7 +138,7 @@ namespace ExcelMate
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("I'm failing on DbContext  " + ex.Message);
                 throw new Exception(ex.Message);
             }
         }
@@ -254,12 +273,15 @@ namespace ExcelMate
                     delim = '\u0014';
                     qual = 'þ';
                 }
+
+
                 if (TableOnly)
                 {
                     await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), PassedHeaders, ExportType_ComboBox.Text, delim, qual);
                 }
                 else
                 {
+                    //MessageBox.Show(Query);
                     await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual);
                 }
                 

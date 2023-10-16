@@ -405,16 +405,33 @@ namespace XLConnect
 
                     List<string> adjustedHeaders = new List<string>();
                     List<string> RawHeaders = new List<string>();
+
                     for(var i=0; i< headers_listbox.SelectedItems.Count; i++)
                     {
                         var formattedHeader = $"NULLIF({headers_listbox.SelectedItems[i]},'') [{headers_listbox.SelectedItems[i]}]";
                         adjustedHeaders.Add(formattedHeader);
                         RawHeaders.Add(headers_listbox.SelectedItems[i].ToString());
                     }
-                    var orderby = sortOrder_ListBox.Items.Count <= 0 ? "" : $"ORDER BY [{String.Join("],[", sortOrder_ListBox.Items)}]";
-                    var query = $"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders)} FROM {Table_Combobox.Text}  {orderby}";
+                    var orderby = "";
+                    List<string> orderBYFields = new List<string>();
+                    //$"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders)} FROM {Table_Combobox.Text} \n {orderby}";
+                    if (sortOrder_ListBox.Items.Count > 0)
+                    {
+                        
+                        for(var ob = 0; ob < sortOrder_ListBox.Items.Count; ob++)
+                        {
+                            var adjusteditem = $"[{sortOrder_ListBox.Items[ob]}]";
+                            if (!orderBYFields.Contains(adjusteditem))
+                            {
+                                orderBYFields.Add(adjusteditem);
+                            }
+                        }
+                        orderby = $"  ORDER BY {String.Join(",", orderBYFields)}";
+                    }
+                    //var orderby = sortOrder_ListBox.Items.Count <= 0 ? "" : $"  ORDER BY [{String.Join("],[", sortOrder_ListBox.Items)}]";
+                    var query = $"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders)} FROM {Table_Combobox.Text} {orderby}";
 
-                   // MessageBox.Show(query);
+                    MessageBox.Show(query);
                     var TableexportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, query, DBCOMBOBOX.Text, Table_Combobox.Text,true, RawHeaders);
                     TableexportWindow.Show();
                     if(TableexportWindow.DialogResult == DialogResult.OK || TableexportWindow.DialogResult == DialogResult.Cancel)
@@ -499,16 +516,16 @@ namespace XLConnect
 
         private void headers_listbox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && e.Clicks == 1)
+            if (e.Button == MouseButtons.Left && e.Clicks == 1 && ModifierKeys == Keys.None)
             {
                 if (this.headers_listbox.SelectedItem == null) return;
                 this.headers_listbox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Move);
             }
-            if (e.Button == MouseButtons.Right && e.Clicks == 1)
-            {
-                if (this.headers_listbox.SelectedItem == null) return;
-                this.sortOrder_ListBox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Copy);
-            }
+            //if (e.Button == MouseButtons.Right && e.Clicks == 1)
+            //{
+            //    if (this.headers_listbox.SelectedItem == null) return;
+            //    this.sortOrder_ListBox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Copy);
+            //}
 
             //this.sortOrder_ListBox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Copy);
         }
@@ -516,6 +533,8 @@ namespace XLConnect
         private void headers_listbox_DragOver(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Move;
+            //var hoveredindex = headers_listbox.IndexFromPoint(headers_listbox.PointToClient(Cursor.Position));
+            //headers_listbox.sele
         }
 
         private void headers_listbox_DragDrop(object sender, DragEventArgs e)
@@ -538,6 +557,7 @@ namespace XLConnect
         private void sortOrder_ListBox_DragOver(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Move;
+            
         }
 
         private void sortOrder_ListBox_DragDrop(object sender, DragEventArgs e)
@@ -599,6 +619,24 @@ namespace XLConnect
                 sortOrder_ListBox.Items.RemoveAt(index);
             }
             
+        }
+
+        private void headers_listbox_MouseHover(object sender, EventArgs e)
+        {
+           // if(headers_listbox.Items.Count <= 0)
+           // {
+           //     return;
+           // }
+
+           // Point point = headers_listbox.PointToClient(Cursor.Position);
+           // int index = headers_listbox.IndexFromPoint(point);
+           // if (index <= 0) return;
+
+           //// headers_listbox.Items[index]dray
+
+
+           // var rect = headers_listbox.GetItemRectangle(index);
+           // rect.Inflate(0, 10);
         }
     }
     
