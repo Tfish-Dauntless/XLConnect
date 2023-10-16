@@ -22,21 +22,25 @@ namespace ExcelMate
         private string ServerName { get; set; }
         private string DataBaseName { get; set; }
         private string TableName { get; set; }
+        private bool TableOnly { get; set; }
+        private List<string>PassedHeaders { get; set; }
         private SQL_Helper SQLHelper { get; set; }
         private Data_Helper Helper { get; set; }
-        public Export_Window(DataTable datalist,SQL_Helper sqlhelper,Data_Helper helper, string server,string query = null,string database = null, string table = null)
+        public Export_Window(DataTable datalist,SQL_Helper sqlhelper,Data_Helper helper, string server,string query = null,string database = null, string table = null,bool tableOnly = false, List<string> passHeaders = null)
         {
             InitializeComponent();
             Rowsleft = datalist.Rows.Count;
             TotalRows = datalist.Rows.Count;
             DataList = datalist;
             ExportCount_Label.Text = "Empty";//datalist == null ? "0" : DataList.Rows.Count.ToString()
-            Query = query.Replace("\n", "").Replace(Environment.NewLine, "");
+            Query = query.Replace("\n", " ").Replace(Environment.NewLine, " ");
             ServerName = server;
             DataBaseName = database;
             TableName = table;
             SQLHelper = sqlhelper;
             Helper = helper;
+            TableOnly = tableOnly;
+            PassedHeaders = passHeaders;
         }
 
         private async Task<Dictionary<string, string>> GetDBContextFromQuery()
@@ -60,11 +64,32 @@ namespace ExcelMate
                 Regex scehmaRegex = new Regex(@"FROM.+?\.(?<schema>.*)\.");
                 Regex tableNameRegex = new Regex(@"FROM.*?\..*?\.(?<tablename>.*?)(?:\n|WHERE|$)");
                 Regex fromLineRegex = new Regex(@"FROM(?<from>.*?)(?:\n|WHERE|$)");
+                Regex innerColumnRegex = new Regex(@"(?<innerColumn>\[[^\[]+$)");
+
 
                 Match columnMatch = Columnregex.Match(Query);
                 Match fromLineMatch = fromLineRegex.Match(Query);
-                var comma = ',';
-                dbContext["Columns"] = Helper.StripString(columnMatch.Groups["columns"].Value).Replace(",",",");
+
+                // The issue is splitting on this comma, when there is a NULLIF or Custom Qualifiers for a field.
+                //var columns = columnMatch.Groups["columns"].Value.Split(',').ToList();
+                var columns = Regex.Split(columnMatch.Groups["columns"].Value, @"(?<spliton>,)(?!')").Where(x => Helper.StripString(x.Trim()) != null && Helper.StripString(x.Trim()) != String.Empty).ToList();
+                List<string>Cols = new List<string>();
+                for(var c = 0; c < columns.Count; c++)
+                {
+
+                    Match innerColumnMatch = innerColumnRegex.Match(columns[c]);
+                    Group innerColumnGroup = innerColumnMatch.Groups["innerColumn"];
+
+                   // innerColumnGroup.Value.Replace("[", "").Replace("]", "");
+                    MessageBox.Show($"Original: {columns[c]}\nsliced: {innerColumnGroup.Value.Replace("[", "").Replace("]", "")}");
+                    if (innerColumnGroup.Value.Replace("[", "").Replace("]", "") != null && innerColumnGroup.Value.Replace("[", "").Replace("]", "") != String.Empty && !Cols.Contains(innerColumnGroup.Value.Replace("[", "").Replace("]", "")))
+                    {
+                        Cols.Add(innerColumnGroup.Value.Replace("[", "").Replace("]", ""));
+                    }
+                }
+
+                dbContext["Columns"] = String.Join(",", Cols);
+
                 Group fromLine = fromLineMatch.Groups["from"];
 
                 Match dataBaseMatch;
@@ -115,7 +140,7 @@ namespace ExcelMate
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("I'm failing on DbContext  " + ex.Message);
                 throw new Exception(ex.Message);
             }
         }
@@ -213,13 +238,13 @@ namespace ExcelMate
 
                 //MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db}\nField: [{DataBaseName}] ");
 
-                if (DataBaseName != null && $"[{DataBaseName.Trim()}]" != adjustedDBContext_Db.Trim())
+                if (!TableOnly && $"[{DataBaseName.Trim()}]" != adjustedDBContext_Db.Trim())
                 {
                     MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db.Trim()}\nField: [{DataBaseName.Trim()}] ");
                     return;
                 }
 
-                if (TableName != null && $"[{TableName.Trim()}]" != adjustedDBContext_Table.Trim())
+                if (!TableOnly && $"[{TableName.Trim()}]" != adjustedDBContext_Table.Trim())
                 {
                     MessageBox.Show($"Table in Query and Table Field do not match.\nQuery: {adjustedDBContext_Table.Trim()}\nField:   [{TableName.Trim()}] ");
                     return;
@@ -251,11 +276,22 @@ namespace ExcelMate
                     qual = 'þ';
                 }
 
-                await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[","").Replace("]",""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(),ExportType_ComboBox.Text,delim,qual);
+
+                if (TableOnly)
+                {
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), PassedHeaders, ExportType_ComboBox.Text, delim, qual);
+                }
+                else
+                {
+                    //MessageBox.Show(Query);
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual);
+                }
+                
 
                 MessageBox.Show("Complete");
                 this.DialogResult = DialogResult.OK;
                 this.Close();
+                
             }
             catch(Exception em)
             {

@@ -18,7 +18,7 @@ using XLConnect.Forms;
 
 namespace XLConnect
 {
-   
+
     public partial class Form1 : Form
     {
         private SQL_Helper SQLHELPER = new SQL_Helper();
@@ -26,7 +26,7 @@ namespace XLConnect
         private Progress<ProgressBarHelper> Progress = new Progress<ProgressBarHelper>();
         public DataTable Table { get; set; }
         public string SQLCONNECTION { get; set; }
-        private Dictionary<string,string> ErrorList = new Dictionary<string, string>();
+        private Dictionary<string, string> ErrorList = new Dictionary<string, string>();
         public Form1()
         {
             InitializeComponent();
@@ -40,16 +40,16 @@ namespace XLConnect
 
 
         }
-        private async Task <bool>validateServerName()
+        private async Task<bool> validateServerName()
         {
             try
             {
-                var servernameActual =  System.Environment.MachineName.ToUpper() == "DEVMACHINE" ? "LocalHost" :  "Proc-SQL01";
+                var servernameActual = System.Environment.MachineName.ToUpper() == "DEVMACHINE" ? "LocalHost" : "Proc-SQL01";
                 Server_TextBox.Text = servernameActual;
                 await IsServerConnected(servernameActual);
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(e.Message);
                 return false;
@@ -58,12 +58,12 @@ namespace XLConnect
         }
         private async Task<bool> IsServerConnected(string server)
         {
-          
-            string connectionString = @"Data Source="+server+";Initial Catalog=Master;Integrated Security=True;";
+
+            string connectionString = @"Data Source=" + server + ";Initial Catalog=Master;Integrated Security=True;";
             bool connectionerror = false;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                
+
                 try
                 {
                     connection.Open();
@@ -76,7 +76,7 @@ namespace XLConnect
                 {
                     MessageBox.Show("SQL CONNECTION FAILED \n" + s.Message);
                     Control_GroupBox.Text += ":  Connection Failed";
-                    connectionerror =  false;
+                    connectionerror = false;
                     connection.Close();
                 }
             }
@@ -106,7 +106,7 @@ namespace XLConnect
                 {
                     // write exception info to log or anything else
                     MessageBox.Show("Error occured!");
-                    haserror =  true;
+                    haserror = true;
                 }
             }
             return haserror;
@@ -118,23 +118,32 @@ namespace XLConnect
             {
                 try
                 {
-                    string query = "use ["+DBCOMBOBOX.Text+"] SELECT name FROM sys.tables";
+                    string query = "use [" + DBCOMBOBOX.Text + "] SELECT name FROM sys.tables";
                     SqlDataAdapter da = new SqlDataAdapter(query, conn);
                     conn.Open();
                     DataTable dt = new DataTable();
                     da.Fill(dt);
-                    Table_Combobox.DataSource = dt;
+
+
+                    for (var r = 0; r < dt.Rows.Count; r++)
+                    {
+                        if (!Table_Combobox.Items.Contains(dt.Rows[r][0].ToString()))
+                        {
+                            Table_Combobox.Items.Add(dt.Rows[r][0].ToString());
+                        }
+                    }
+
                     Table_Combobox.DisplayMember = "name";
                     Table_Combobox.ValueMember = "name";
 
-
                     Export_Button.Visible = true;
                     Clear_Button.Visible = true;
+                    dt.Dispose();
                 }
                 catch (Exception ex)
                 {
                     // write exception info to log or anything else
-                    MessageBox.Show("Error occured!");
+                    MessageBox.Show($"Error occured!\n{ex.Message}\n{ex.StackTrace}");
                     haserror = true;
                 }
             }
@@ -145,7 +154,7 @@ namespace XLConnect
         {
             try
             {
-               // MessageBox.Show("I'm running next method");
+                // MessageBox.Show("I'm running next method");
                 var i = 0;
                 var newFilenames = new List<string>();
                 var progressHelper = new ProgressBarHelper();
@@ -165,7 +174,7 @@ namespace XLConnect
                             Error_RichTextBox.Text += "\nRunning " + finfo.Name;
 
                         }));
-                       
+
                         switch (finfo.Extension.ToLower())
                         {
                             case ".txt":
@@ -199,10 +208,10 @@ namespace XLConnect
                                     {
                                         Error_RichTextBox.Text += $"\n Error: {finfo.Name}\n Message: {e.Message}";
                                         Error_RichTextBox.ScrollToCaret();
-                                        ErrorList.Add(finfo.Name,e.Message);
+                                        ErrorList.Add(finfo.Name, e.Message);
 
                                     }));
-                                    
+
                                 }
 
                                 break;
@@ -223,7 +232,7 @@ namespace XLConnect
                                         {
                                             dtheaders.Add(column.ToString());
                                         }
-                                       
+
                                         await SQLHELPER.CreateTable(ServerName, DataBaseName, tablename, dtheaders, true);
                                         await DataHelper.InsertProcessedData(dt, ServerName, DataBaseName, tablename);
 
@@ -236,10 +245,10 @@ namespace XLConnect
                                         {
                                             Error_RichTextBox.Text += $"\n Error: {finfo.Name}\n Message: {e.Message}";
                                             Error_RichTextBox.ScrollToCaret();
-                                            ErrorList.Add(finfo.Name,e.Message);
+                                            ErrorList.Add(finfo.Name, e.Message);
 
                                         }));
-                                        
+
                                     }
 
                                 }
@@ -288,7 +297,7 @@ namespace XLConnect
                                                 ErrorList.Add($"{finfo.Name}_{currentSheetName}", e.Message);
 
                                             }));
-                                            
+
                                         }
 
                                     }
@@ -299,17 +308,17 @@ namespace XLConnect
                         }
                         newFilenames.Add(i.ToString());
                         progressHelper.files = newFilenames;
-                        progressHelper.Percentage = (i) * 100 / totalfiles -1;
+                        progressHelper.Percentage = (i) * 100 / totalfiles - 1;
                         //toshow = (int.Parse(roundcount)) * 100 / totalcount;
                         progress.Report(progressHelper);
                         i += 1;
                     });
                 }));
-                
+
 
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 this.Invoke(new MethodInvoker(delegate
                 {
@@ -317,18 +326,18 @@ namespace XLConnect
                     Error_RichTextBox.ScrollToCaret();
 
                 }));
-                
+
                 return false;
             }
-            
+
         }
 
         private async Task<bool> ExportErrorsToFile()
         {
             try
             {
-               
-                       
+
+
                 using (StreamWriter outfilelocation = new StreamWriter(Import_Textbox.Text + "\\ErrorList.Txt"))
                 {
 
@@ -338,7 +347,7 @@ namespace XLConnect
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Error_RichTextBox.Text += $"\n Message: {e.Message}\n{e.StackTrace}";
                 Error_RichTextBox.ScrollToCaret();
@@ -347,39 +356,12 @@ namespace XLConnect
             return true;
         }
 
-        private async  void TestConnection_Button_Click(object sender, EventArgs e)
+        private async void TestConnection_Button_Click(object sender, EventArgs e)
         {
-           await IsServerConnected(Server_TextBox.Text);
+            await IsServerConnected(Server_TextBox.Text);
         }
 
         private async void Run_Button_Click(object sender, EventArgs e)
-        {
-            switch (Data_Tab.SelectedIndex)
-            {
-                case 0:
-                    await SQLHELPER.RunSQLQuery(Query_Box.Text,Server_TextBox.Text,DBCOMBOBOX.Text,Table);
-                    break;
-                case 1:
-
-                   // MessageBox.Show("Running");
-                    
-                    await GatherFIleData(Progress);
-                    if(ErrorList.Count > 0)
-                    {
-                        await ExportErrorsToFile();
-                    }
-                    var errorstoadd = ErrorList.Count > 0 ? "d With Errors" : "!";
-                    Error_RichTextBox.Text += $"\n\n\nComplete{errorstoadd}";
-                    Error_RichTextBox.ScrollToCaret();
-                    // MessageBox.Show("Complete!");
-                    break;
-            }
-            
-        }
-
-      
-
-        private async void Export_Button_Click(object sender, EventArgs e)
         {
             switch (Data_Tab.SelectedIndex)
             {
@@ -395,36 +377,101 @@ namespace XLConnect
                     Error_RichTextBox.Text += $"\n\n\nComplete{errorstoadd}";
                     Error_RichTextBox.ScrollToCaret();
                     // MessageBox.Show("Complete!");
-                    
 
+
+                    break;
+            }
+
+        }
+
+
+
+        private async void Export_Button_Click(object sender, EventArgs e)
+        {
+            switch (Data_Tab.SelectedIndex)
+            {
+                case 0:
+                    
                     break;
                 case 1:
 
+                    if(headers_listbox.SelectedItems.Count <= 0)
+                    {
+                        for(var si = 0;si <  headers_listbox.Items.Count; si++)
+                        {
+                            headers_listbox.SetSelected(si, true);
+                        }
+                    }
 
+                    List<string> adjustedHeaders = new List<string>();
+                    List<string> RawHeaders = new List<string>();
+
+                    for(var i=0; i< headers_listbox.SelectedItems.Count; i++)
+                    {
+                        var formattedHeader = $"NULLIF({headers_listbox.SelectedItems[i]},'') [{headers_listbox.SelectedItems[i]}]";
+                        adjustedHeaders.Add(formattedHeader);
+                        RawHeaders.Add(headers_listbox.SelectedItems[i].ToString());
+                    }
+                    var orderby = "";
+                    List<string> orderBYFields = new List<string>();
+                    //$"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders)} FROM {Table_Combobox.Text} \n {orderby}";
+                    if (sortOrder_ListBox.Items.Count > 0)
+                    {
+                        
+                        for(var ob = 0; ob < sortOrder_ListBox.Items.Count; ob++)
+                        {
+                            var adjusteditem = $"[{sortOrder_ListBox.Items[ob]}]";
+                            if (!orderBYFields.Contains(adjusteditem))
+                            {
+                                orderBYFields.Add(adjusteditem);
+                            }
+                        }
+                        orderby = $"  ORDER BY {String.Join(",", orderBYFields)}";
+                    }
+                    //var orderby = sortOrder_ListBox.Items.Count <= 0 ? "" : $"  ORDER BY [{String.Join("],[", sortOrder_ListBox.Items)}]";
+                    var query = $"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders)} FROM {Table_Combobox.Text} {orderby}";
+
+                    MessageBox.Show(query);
+                    var TableexportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, query, DBCOMBOBOX.Text, Table_Combobox.Text,true, RawHeaders);
+                    TableexportWindow.Show();
+                    if(TableexportWindow.DialogResult == DialogResult.OK || TableexportWindow.DialogResult == DialogResult.Cancel)
+                    {
+                        RawHeaders.Clear();
+                        adjustedHeaders.Clear();
+                        TableexportWindow.Dispose();
+                    }
+                    
                     break;
                 case 2:
                     var exportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, Query_Box.Text, DBCOMBOBOX.Text, Table_Combobox.Text);
                     exportWindow.Show();
-
+                    if (exportWindow.DialogResult == DialogResult.OK || exportWindow.DialogResult == DialogResult.Cancel)
+                    {
+                        exportWindow.Dispose();
+                    }
                     break;
             }
-            
+
         }
-       
+
 
         private async void DBCOMBOBOX_Click(object sender, EventArgs e)
         {
+            headers_listbox.Items.Clear();
+            sortOrder_ListBox.Items.Clear();
             await PopulateComboBox();
         }
 
         private async void Table_Combobox_Click(object sender, EventArgs e)
         {
+            
+
             await PopulateTableComboBox();
         }
 
         private void Clear_Button_Click(object sender, EventArgs e)
         {
-            
+
             Table.Clear();
             Table.AcceptChanges();
             Table.Dispose();
@@ -464,6 +511,133 @@ namespace XLConnect
                 progressBar1.Value = e.Percentage;
             }));
         }
-    }
 
+
+
+        private void headers_listbox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && e.Clicks == 1 && ModifierKeys == Keys.None)
+            {
+                if (this.headers_listbox.SelectedItem == null) return;
+                this.headers_listbox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Move);
+            }
+            //if (e.Button == MouseButtons.Right && e.Clicks == 1)
+            //{
+            //    if (this.headers_listbox.SelectedItem == null) return;
+            //    this.sortOrder_ListBox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Copy);
+            //}
+
+            //this.sortOrder_ListBox.DoDragDrop(this.headers_listbox.SelectedItem, DragDropEffects.Copy);
+        }
+
+        private void headers_listbox_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+            //var hoveredindex = headers_listbox.IndexFromPoint(headers_listbox.PointToClient(Cursor.Position));
+            //headers_listbox.sele
+        }
+
+        private void headers_listbox_DragDrop(object sender, DragEventArgs e)
+        {
+            Point point = headers_listbox.PointToClient(new Point(e.X, e.Y));
+            int index = this.headers_listbox.IndexFromPoint(point);
+            if (index < 0) index = this.headers_listbox.Items.Count - 1;
+            object eventItem = e.Data.GetData(typeof(String));
+            //MessageBox.Show($"Event Item: {eventItem}\neventData: {e.Data.GetData(typeof(String))}");
+            this.headers_listbox.Items.Remove(eventItem);
+            this.headers_listbox.Items.Insert(index, eventItem);
+        }
+
+        private void sortOrder_ListBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (this.sortOrder_ListBox.SelectedItem == null) return;
+            this.sortOrder_ListBox.DoDragDrop(this.sortOrder_ListBox.SelectedItem, DragDropEffects.Move);
+        }
+
+        private void sortOrder_ListBox_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+            
+        }
+
+        private void sortOrder_ListBox_DragDrop(object sender, DragEventArgs e)
+        {
+            Point point = sortOrder_ListBox.PointToClient(new Point(e.X, e.Y));
+            int index = this.sortOrder_ListBox.IndexFromPoint(point);
+            if (index < 0) index = this.sortOrder_ListBox.Items.Count - 1;
+            object eventItem = e.Data.GetData(typeof(String));
+            //MessageBox.Show($"Event Item: {eventItem}\neventData: {e.Data.GetData(typeof(String))}");
+            this.sortOrder_ListBox.Items.Remove(eventItem);
+            this.sortOrder_ListBox.Items.Insert(index, eventItem);
+        }
+
+        private async void Table_Combobox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+
+
+        }
+
+        private async void Table_Combobox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            
+            headers_listbox.Items.Clear();
+            sortOrder_ListBox.Items.Clear();
+
+            var columns = await SQLHELPER.GatherSqlColumns(Server_TextBox.Text, DBCOMBOBOX.Text, Table_Combobox.Text);
+            //MessageBox.Show(String.Join(";", columns));
+            foreach (var column in columns)
+            {
+                headers_listbox.Items.Add(column);
+            }
+        }
+
+
+
+        private void headers_listbox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = this.headers_listbox.IndexFromPoint(e.Location);
+            if (!sortOrder_ListBox.Items.Contains(headers_listbox.Items[index]))
+            {
+                sortOrder_ListBox.Items.Add(headers_listbox.Items[index]);
+            }
+        }
+
+        private void sortOrder_ListBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            //MessageBox.Show($"KeyCode: {e.KeyCode.ToString()}\nKeyValue: {e.KeyValue.ToString()}\n SupressentKey: {e.SuppressKeyPress}");
+            if(e.KeyCode == Keys.Delete)
+            {
+                //MessageBox.Show($"KeyCode: {e.KeyCode.ToString()}\nKeyValue: {e.KeyValue.ToString()}\n SupressentKey: {e.SuppressKeyPress}\nSelectedIndex {sortOrder_ListBox.SelectedIndex}");
+                if (sortOrder_ListBox.SelectedIndex < 0)
+                {
+                    MessageBox.Show($"KeyCode: {e.KeyCode.ToString()}\nKeyValue: {e.KeyValue.ToString()}\n SupressentKey: {e.SuppressKeyPress}\nSelectedIndex {sortOrder_ListBox.SelectedIndex}");
+                    return;
+                }
+
+                var index = sortOrder_ListBox.SelectedIndex;
+                sortOrder_ListBox.Items.RemoveAt(index);
+            }
+            
+        }
+
+        private void headers_listbox_MouseHover(object sender, EventArgs e)
+        {
+           // if(headers_listbox.Items.Count <= 0)
+           // {
+           //     return;
+           // }
+
+           // Point point = headers_listbox.PointToClient(Cursor.Position);
+           // int index = headers_listbox.IndexFromPoint(point);
+           // if (index <= 0) return;
+
+           //// headers_listbox.Items[index]dray
+
+
+           // var rect = headers_listbox.GetItemRectangle(index);
+           // rect.Inflate(0, 10);
+        }
+    }
+    
 }
