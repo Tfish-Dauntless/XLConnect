@@ -638,6 +638,25 @@ namespace XLConnect
            // var rect = headers_listbox.GetItemRectangle(index);
            // rect.Inflate(0, 10);
         }
+
+        private void Data_Tab_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (Data_Tab.SelectedIndex)
+            {
+                case 0:
+                    Export_Button.Visible = false;
+                    Run_Button.Visible = true;
+                break;
+                case 1:
+                    Export_Button.Visible = true;
+                    Run_Button.Visible = false;
+                    break;
+                case 2:
+                    Export_Button.Visible = true;
+                    Run_Button.Visible = false;
+                    break;
+            }
+        }
     }
     
 }

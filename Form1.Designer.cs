@@ -222,6 +222,7 @@ namespace XLConnect
             this.Data_Tab.SelectedIndex = 0;
             this.Data_Tab.Size = new System.Drawing.Size(800, 492);
             this.Data_Tab.TabIndex = 1;
+            this.Data_Tab.SelectedIndexChanged += new System.EventHandler(this.Data_Tab_SelectedIndexChanged);
             // 
             // Import_Tab
             // 
@@ -529,6 +530,7 @@ namespace XLConnect
             this.Clear_Button.TabIndex = 3;
             this.Clear_Button.Text = "Clear";
             this.Clear_Button.UseVisualStyleBackColor = true;
+            this.Clear_Button.Visible = false;
             this.Clear_Button.Click += new System.EventHandler(this.Clear_Button_Click);
             // 
             // progressBar1
@@ -541,21 +543,22 @@ namespace XLConnect
             // 
             // Export_Button
             // 
-            this.Export_Button.Location = new System.Drawing.Point(346, 19);
+            this.Export_Button.Location = new System.Drawing.Point(316, 19);
             this.Export_Button.Name = "Export_Button";
             this.Export_Button.Size = new System.Drawing.Size(116, 28);
             this.Export_Button.TabIndex = 1;
             this.Export_Button.Text = "Export";
             this.Export_Button.UseVisualStyleBackColor = true;
+            this.Export_Button.Visible = false;
             this.Export_Button.Click += new System.EventHandler(this.Export_Button_Click);
             // 
             // Run_Button
             // 
-            this.Run_Button.Location = new System.Drawing.Point(173, 19);
+            this.Run_Button.Location = new System.Drawing.Point(316, 19);
             this.Run_Button.Name = "Run_Button";
             this.Run_Button.Size = new System.Drawing.Size(114, 28);
             this.Run_Button.TabIndex = 0;
-            this.Run_Button.Text = "Run";
+            this.Run_Button.Text = "Import";
             this.Run_Button.UseVisualStyleBackColor = true;
             this.Run_Button.Click += new System.EventHandler(this.Run_Button_Click);
             // 
