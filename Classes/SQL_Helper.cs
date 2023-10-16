@@ -36,7 +36,7 @@ namespace XLConnect.Classes
                     _con.Open();
 
                     //MessageBox.Show($"Connection Open\nnew FilePath: {exportLocation}");
-                    //MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}\nHeaders: {String.Join(",", headers)}");
+                    MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}\nHeaders: {String.Join(",", headers)}");
 
                     MessageBox.Show(query);
 

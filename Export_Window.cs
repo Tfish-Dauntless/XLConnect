@@ -64,13 +64,15 @@ namespace ExcelMate
                 Regex scehmaRegex = new Regex(@"FROM.+?\.(?<schema>.*)\.");
                 Regex tableNameRegex = new Regex(@"FROM.*?\..*?\.(?<tablename>.*?)(?:\n|WHERE|$)");
                 Regex fromLineRegex = new Regex(@"FROM(?<from>.*?)(?:\n|WHERE|$)");
-                Regex innerColumnRegex = new Regex(@"(?<innerColumn>\[[^\[]+?)$");
+                Regex innerColumnRegex = new Regex(@"(?<innerColumn>\[[^\[]+$)");
+
 
                 Match columnMatch = Columnregex.Match(Query);
                 Match fromLineMatch = fromLineRegex.Match(Query);
 
-                var columns = columnMatch.Groups["columns"].Value.Replace(",", ",").Split(',').ToList();
-
+                // The issue is splitting on this comma, when there is a NULLIF or Custom Qualifiers for a field.
+                //var columns = columnMatch.Groups["columns"].Value.Split(',').ToList();
+                var columns = Regex.Split(columnMatch.Groups["columns"].Value, @"(?<spliton>,)(?!')").Where(x => Helper.StripString(x.Trim()) != null && Helper.StripString(x.Trim()) != String.Empty).ToList();
                 List<string>Cols = new List<string>();
                 for(var c = 0; c < columns.Count; c++)
                 {
@@ -79,8 +81,8 @@ namespace ExcelMate
                     Group innerColumnGroup = innerColumnMatch.Groups["innerColumn"];
 
                    // innerColumnGroup.Value.Replace("[", "").Replace("]", "");
-                    //MessageBox.Show($"Original: {columns[c]}\nsliced: {innerColumnGroup.Value}");
-                    if (!Cols.Contains(innerColumnGroup.Value.Replace("[", "").Replace("]", "")))
+                    MessageBox.Show($"Original: {columns[c]}\nsliced: {innerColumnGroup.Value.Replace("[", "").Replace("]", "")}");
+                    if (innerColumnGroup.Value.Replace("[", "").Replace("]", "") != null && innerColumnGroup.Value.Replace("[", "").Replace("]", "") != String.Empty && !Cols.Contains(innerColumnGroup.Value.Replace("[", "").Replace("]", "")))
                     {
                         Cols.Add(innerColumnGroup.Value.Replace("[", "").Replace("]", ""));
                     }
