@@ -155,8 +155,8 @@ namespace XLConnect.Classes
             }
             catch(Exception e)
             {
-                MessageBox.Show(e.Message +"\n\n"+ e.StackTrace);
-                throw new Exception(e.Message);
+                MessageBox.Show(e.Message +"\n\n"+ query+ "\n\n" + e.StackTrace);
+                throw new Exception(e.Message + "\n\n" + query + "\n\n" + e.StackTrace);
             }
         }
 

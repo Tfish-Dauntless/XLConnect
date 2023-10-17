@@ -1,19 +1,14 @@
 ﻿
 using Sylvan.Data.Excel;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XLConnect.Classes;
-using static OfficeOpenXml.ExcelErrorValue;
 
 namespace ExcelMate
 {
@@ -82,7 +77,7 @@ namespace ExcelMate
                     Group innerColumnGroup = innerColumnMatch.Groups["innerColumn"];
 
                    // innerColumnGroup.Value.Replace("[", "").Replace("]", "");
-                    MessageBox.Show($"Original: {columns[c]}\nsliced: {innerColumnGroup.Value.Replace("[", "").Replace("]", "")}");
+                    //MessageBox.Show($"Original: {columns[c]}\nsliced: {innerColumnGroup.Value.Replace("[", "").Replace("]", "")}");
                     if (innerColumnGroup.Value.Replace("[", "").Replace("]", "") != null && innerColumnGroup.Value.Replace("[", "").Replace("]", "") != String.Empty && !Cols.Contains(innerColumnGroup.Value.Replace("[", "").Replace("]", "")))
                     {
                         Cols.Add(innerColumnGroup.Value.Replace("[", "").Replace("]", ""));
@@ -298,6 +293,18 @@ namespace ExcelMate
             catch(Exception em)
             {
                 MessageBox.Show(em.Message +"\n\n" + em.StackTrace);
+
+                var errorFile = Helper.ReplaceLastOccurrence(ExportLocation_TextBox.Text, $".{ExportType_ComboBox.Text.ToLower()}", "_Errors.txt");
+                var tw = File.CreateText(errorFile);
+
+                var errMssg = $"date: {DateTime.Now}\nLogType: Error\nMessage: {em.Message}\n\nStackTrace: {em.StackTrace}";
+                tw.Write(errMssg);
+
+                tw.Close();
+                tw.Dispose();
+
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
             }
         }
         private void MaxRowSize_CheckBox_CheckedChanged(object sender, EventArgs e)

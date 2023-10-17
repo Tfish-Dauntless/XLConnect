@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -36,7 +37,8 @@ namespace XLConnect
             DataHelper = new Data_Helper(SQLHELPER);
             Progress.ProgressChanged += ReportProgess;
             validateServerName();
-
+            this.Load += new EventHandler(XLConnect_Load);
+            
 
 
         }
@@ -508,7 +510,7 @@ namespace XLConnect
 
                     for(var i=0; i< headers_listbox.SelectedItems.Count; i++)
                     {
-                        var formattedHeader = $"NULLIF({headers_listbox.SelectedItems[i]},'') [{headers_listbox.SelectedItems[i]}]";
+                        var formattedHeader = $"NULLIF([{headers_listbox.SelectedItems[i]}],'') [{headers_listbox.SelectedItems[i]}]";
                         adjustedHeaders.Add(formattedHeader);
                         RawHeaders.Add(headers_listbox.SelectedItems[i].ToString());
                     }
@@ -529,7 +531,7 @@ namespace XLConnect
                         orderby = $"  ORDER BY {String.Join(",", orderBYFields)}";
                     }
                     //var orderby = sortOrder_ListBox.Items.Count <= 0 ? "" : $"  ORDER BY [{String.Join("],[", sortOrder_ListBox.Items)}]";
-                    var query = $"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders)} FROM {Table_Combobox.Text} {orderby}";
+                    var query = $"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders).Replace("'","''")} FROM [{Table_Combobox.Text}] {orderby}";
 
                     //MessageBox.Show(query);
                     var TableexportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, query, DBCOMBOBOX.Text, Table_Combobox.Text,true, RawHeaders);
@@ -559,6 +561,8 @@ namespace XLConnect
         {
             headers_listbox.Items.Clear();
             sortOrder_ListBox.Items.Clear();
+            Table_Combobox.Items.Clear();
+
             await PopulateComboBox();
         }
 
@@ -756,6 +760,10 @@ namespace XLConnect
                     Run_Button.Visible = false;
                     break;
             }
+        }
+        private void XLConnect_Load(global::System.Object sender, global::System.EventArgs e)
+        {
+            this.Text = $"{this.Text} {Assembly.GetExecutingAssembly().GetName().Version}";
         }
     }
     
