@@ -22,6 +22,11 @@ namespace ExcelMate
         private List<string>PassedHeaders { get; set; }
         private SQL_Helper SQLHelper { get; set; }
         private Data_Helper Helper { get; set; }
+        public int TotalRows { get; set; }
+        public int Rowsleft { get; set; }
+        public DataTable DataList { get; set; }
+        public DataTable RoundTracking { get; set; }
+
         public Export_Window(DataTable datalist,SQL_Helper sqlhelper,Data_Helper helper, string server,string query = null,string database = null, string table = null,bool tableOnly = false, List<string> passHeaders = null)
         {
             InitializeComponent();
@@ -48,7 +53,8 @@ namespace ExcelMate
                     {"DataBaseName","" },
                     {"schema","" },
                     {"TableName","" },
-                    {"Columns","" }
+                    {"Columns","" },
+                    {"WhereClause","" }
                 };
 
                 int indexOfSelect = Query.ToUpper().IndexOf("SELECT ");
@@ -61,10 +67,12 @@ namespace ExcelMate
                 Regex tableNameRegex = new Regex(@"FROM.*?\..*?\.(?<tablename>.*?)(?:\n|WHERE|$)");
                 Regex fromLineRegex = new Regex(@"FROM(?<from>.*?)(?:\n|WHERE|$)");
                 Regex innerColumnRegex = new Regex(@"(?<innerColumn>\[[^\[]+$)");
+                Regex whereClausRegex = new Regex(@"FROM.*?(?:\n|$)WHERE(?<whereclaus>.*?)(?:\n|$)");
 
 
                 Match columnMatch = Columnregex.Match(Query);
                 Match fromLineMatch = fromLineRegex.Match(Query);
+                Match whereCaluseMatch = whereClausRegex.Match(Query);
 
                 // The issue is splitting on this comma, when there is a NULLIF or Custom Qualifiers for a field.
                 //var columns = columnMatch.Groups["columns"].Value.Split(',').ToList();
@@ -85,6 +93,7 @@ namespace ExcelMate
                 }
 
                 dbContext["Columns"] = String.Join(",", Cols);
+                dbContext["WhereClause"] = whereCaluseMatch.Groups["whereclaus"].Value;
 
                 Group fromLine = fromLineMatch.Groups["from"];
 
@@ -118,6 +127,8 @@ namespace ExcelMate
                             tableNameMatch = tableNameRegex.Match(Query);
                             dbContext["schema"] = scehmaMatch.Groups["schema"].Value;
                             dbContext["TableName"] = tableNameMatch.Groups["tablename"].Value;
+
+
                             break;
                         default:
                             dataBaseMatch = dataBaseRegex.Match(Query);
@@ -230,6 +241,7 @@ namespace ExcelMate
                 var dbcontext = GetDBContextFromQuery().Result;
 
                 var adjustedDBContext_Db = dbcontext["DataBaseName"].Contains("[") ? dbcontext["DataBaseName"] : $"[{dbcontext["DataBaseName"]}]";
+                var adjustedDBContext_schema = dbcontext["schema"].Contains("[") ? dbcontext["schema"] : $"[{dbcontext["schema"]}]";
                 var adjustedDBContext_Table = dbcontext["TableName"].Contains("[") ? dbcontext["TableName"] : $"[{dbcontext["TableName"]}]";
 
                 //MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db}\nField: [{DataBaseName}] ");
@@ -273,19 +285,32 @@ namespace ExcelMate
                 }
 
                 var rowCap = MaxRowSize_CheckBox.Checked ? Convert.ToInt32(RowsPerSheet_NumBox.Value) : 999999;
-
+              
+                
+                Progress<ProgressBarHelper> Progress = new Progress<ProgressBarHelper>();
+                Progress.ProgressChanged += Report_FinalizeProgess;
                 if (TableOnly)
                 {
-                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), PassedHeaders, ExportType_ComboBox.Text, delim, qual, rowCap);
+                    var queryforCount = $"USE [{DataBaseName}]  SELECT COUNT(*)  FROM [{TableName}]   {dbcontext["WhereClause"]}";
+
+                    var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryforCount);
+                    RowsToExport.Text = $"Exporting";
+                    ExportCount_Label.Text = $"{totalCount} Rows";
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, DataBaseName,TableName, PassedHeaders, ExportType_ComboBox.Text, delim, qual, Progress, rowCap, totalCount);
                 }
                 else
                 {
                     //MessageBox.Show(Query);
-                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual, rowCap);
+                    var queryforCount = $"USE [{adjustedDBContext_Db.Replace("[", "").Replace("]", "")}]  SELECT COUNT(*)  FROM [{adjustedDBContext_Table.Replace("[", "").Replace("]", "")}]  {dbcontext["WhereClause"]}";
+                    var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryforCount);
+                    RowsToExport.Text = $"Exporting";
+                    ExportCount_Label.Text = $"{totalCount} Rows";
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual, Progress,rowCap, totalCount);
                 }
                 
 
                 MessageBox.Show("Complete");
+
                 this.DialogResult = DialogResult.OK;
                 this.Close();
                 
@@ -326,11 +351,11 @@ namespace ExcelMate
         {
             toolTip1.SetToolTip(MaxRowSize_CheckBox, "Defualt Max Row limit is 999,999"); // you can change the first parameter (textbox3) on any control you wanna focus
         }
-        public int TotalRows { get; set; }
-        public int Rowsleft { get; set; }
-        public DataTable DataList { get; set; }
-        public DataTable RoundTracking { get; set; }
-
+        private void Report_FinalizeProgess(object sender, ProgressBarHelper e)
+        {
+            
+            progressBar1.Value = e.Percentage;
+        }
         private void ExportType_ComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
             if (!Delimiter_TextBox.Enabled)

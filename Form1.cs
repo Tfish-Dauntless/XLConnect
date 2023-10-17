@@ -531,7 +531,7 @@ namespace XLConnect
                         orderby = $"  ORDER BY {String.Join(",", orderBYFields)}";
                     }
                     //var orderby = sortOrder_ListBox.Items.Count <= 0 ? "" : $"  ORDER BY [{String.Join("],[", sortOrder_ListBox.Items)}]";
-                    var query = $"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders).Replace("'","''")} FROM [{Table_Combobox.Text}] {orderby}";
+                    var query = $"USE [{DBCOMBOBOX.Text}]   Select {String.Join(",", adjustedHeaders)} FROM [{Table_Combobox.Text}] {orderby}";
 
                     //MessageBox.Show(query);
                     var TableexportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, query, DBCOMBOBOX.Text, Table_Combobox.Text,true, RawHeaders);
