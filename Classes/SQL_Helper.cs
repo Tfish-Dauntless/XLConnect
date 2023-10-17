@@ -46,14 +46,16 @@ namespace XLConnect.Classes
 
                         using (var reader = await _cmd2.ExecuteReaderAsync())
                         {
+                            int count = 1;
+                            int fcount = 1;
+                            var fname = exportLocation;
+
                             switch (exportType.ToLower())
                             {
                                 case "dat":
                                 case "txt":
                                 case "csv":
-                                    int count = 1;
-                                    int fcount = 1;
-                                    var fname = exportLocation;
+                                    
                                     var tw = File.CreateText(fname);
 
                                     var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
@@ -94,30 +96,18 @@ namespace XLConnect.Classes
                                     tw.Dispose();
                                     break;
                                 case "xlsx":
-                                    var Template = new FileInfo(exportLocation);
+                                    var Template = new FileInfo(fname);
                                     var xlPackage = new ExcelPackage(Template);
                                     var wsCards = xlPackage.Workbook.Worksheets.Add(tableName);
                                     int row = 1, col = 1;
 
-
-
-                                    //foreach (DataRow rw in schemaTable.Rows)
-                                    //{
-                                    // Write the headers to the first row
-                                    //var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
                                     foreach (var column in headers)
                                     {
-                                        
-                                        // Condition Will only be required if you want to write 
-                                        // specific column names
-                                        //if (column.ColumnName == "ColumnName")
-                                        //{ 
-
                                         wsCards.Cells[1, col].Value = Helper.StripString(column.Replace("[", "").Replace("]", ""));
-                                        col++;
-                                        //}
+                                        col+=1;
+                                        
                                     }
-                                    //}
+                                    
                                     while (await reader.ReadAsync())
                                     {
                                         //MessageBox.Show("Reading While Loop");
@@ -126,6 +116,28 @@ namespace XLConnect.Classes
                                         {
                                             wsCards.Cells[row, col].Value = reader.GetValue(col - 1);
                                         }
+                                        if (count > rowcap)
+                                        {
+                                            var toReplace = fcount > 1 ? $"_{fcount - 1}." : ".";
+                                            fname = Helper.ReplaceLastOccurrence(fname, toReplace, $"_{fcount}.");
+                                            fcount += 1;
+                                            xlPackage.SaveAs(Template);
+                                            //xlPackage.Dispose();
+                                            Template = new FileInfo(fname);
+                                            xlPackage = new ExcelPackage(Template);
+                                            wsCards = xlPackage.Workbook.Worksheets.Add(tableName);
+                                            row = 1;
+                                            col = 1;
+                                            var newcol = 1;
+                                            foreach (var column in headers)
+                                            {
+                                                wsCards.Cells[1, col].Value = Helper.StripString(column.Replace("[", "").Replace("]", ""));
+                                                col += 1;
+
+                                            }
+                                            count = 1;
+                                        }
+                                        count += 1;
                                     }
                                     xlPackage.SaveAs(Template);
                                     xlPackage.Dispose();
