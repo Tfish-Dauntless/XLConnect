@@ -54,18 +54,19 @@ namespace ExcelMate
                     {"schema","" },
                     {"TableName","" },
                     {"Columns","" },
-                    {"WhereClause","" }
+                    {"WhereClause","" },
+                    {"FromStatement","" }
                 };
 
                 int indexOfSelect = Query.ToUpper().IndexOf("SELECT ");
                 int indexOfSelectOffset = 7;
 
 
-                Regex Columnregex = new Regex(@"(?:SELECT TOP.+?\)|SELECT)(?<columns>.*?)FROM");
+                Regex Columnregex = new Regex(@"(?s)^(?:SELECT.+?TOP.+?\)|SELECT)(?<columns>.*?)(?:INTO|FROM(?!,|_))");
                 Regex dataBaseRegex = new Regex(@"FROM.+?(?<dbname>.*?)\.");
                 Regex scehmaRegex = new Regex(@"FROM.+?\.(?<schema>.*)\.");
                 Regex tableNameRegex = new Regex(@"FROM.*?\..*?\.(?<tablename>.*?)(?:\n|WHERE|$)");
-                Regex fromLineRegex = new Regex(@"FROM(?<from>.*?)(?:\n|WHERE|$)");
+                Regex fromLineRegex = new Regex(@"(?s)(?<from>FROM(?!,|_).+$)");
                 Regex innerColumnRegex = new Regex(@"(?<innerColumn>\[[^\[]+$)");
                 Regex whereClausRegex = new Regex(@"(?!.*?\))WHERE(?<whereclaus>.*?)(?:\n|$)");
 
@@ -94,8 +95,10 @@ namespace ExcelMate
 
                 dbContext["Columns"] = String.Join(",", Cols);
                 dbContext["WhereClause"] = whereCaluseMatch.Groups["whereclaus"].Value;
+                
 
                 Group fromLine = fromLineMatch.Groups["from"];
+                dbContext["FromStatement"] = fromLine.Value;
 
                 Match dataBaseMatch;
                 Match scehmaMatch;
@@ -287,6 +290,7 @@ namespace ExcelMate
               
                 
                 Progress<ProgressBarHelper> Progress = new Progress<ProgressBarHelper>();
+
                 Progress.ProgressChanged += Report_FinalizeProgess;
                 if (TableOnly)
                 {
@@ -295,16 +299,17 @@ namespace ExcelMate
                     var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryforCount);
                     RowsToExport.Text = $"Exporting";
                     ExportCount_Label.Text = $"{totalCount} Rows";
-                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, DataBaseName,TableName, PassedHeaders, ExportType_ComboBox.Text, delim, qual, Progress, rowCap, totalCount);
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, DataBaseName,TableName, PassedHeaders, ExportType_ComboBox.Text, delim, qual, Progress, rowCap, 100);
                 }
                 else
                 {
                     //MessageBox.Show(Query);
-                    var queryforCount = $"USE [{adjustedDBContext_Db.Replace("[", "").Replace("]", "")}]  SELECT COUNT(*)  FROM [{adjustedDBContext_Table.Replace("[", "").Replace("]", "")}]  {dbcontext["WhereClause"]}";
-                    var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryforCount);
-                    RowsToExport.Text = $"Exporting";
-                    ExportCount_Label.Text = $"{totalCount} Rows";
-                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual, Progress,rowCap, totalCount);
+                    var queryforCount = $" SELECT COUNT(*)  [{dbcontext["FromStatement"]}]";
+                    MessageBox.Show(queryforCount);
+                    //var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryforCount);
+                    //RowsToExport.Text = $"Exporting";
+                    //ExportCount_Label.Text = $"{totalCount} Rows";
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual, Progress,rowCap, 100);
                 }
                 
 
