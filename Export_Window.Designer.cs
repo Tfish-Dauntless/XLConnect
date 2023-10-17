@@ -163,12 +163,12 @@ namespace ExcelMate
             // RowsToExport
             // 
             this.RowsToExport.Dock = System.Windows.Forms.DockStyle.Right;
-            this.RowsToExport.Location = new System.Drawing.Point(146, 0);
+            this.RowsToExport.Location = new System.Drawing.Point(173, 0);
             this.RowsToExport.Name = "RowsToExport";
             this.RowsToExport.Padding = new System.Windows.Forms.Padding(0, 20, 0, 0);
-            this.RowsToExport.Size = new System.Drawing.Size(83, 53);
+            this.RowsToExport.Size = new System.Drawing.Size(56, 53);
             this.RowsToExport.TabIndex = 7;
-            this.RowsToExport.Text = "Rows To Export";
+            this.RowsToExport.Text = "Exporting";
             // 
             // ExportCount_Label
             // 
@@ -176,9 +176,9 @@ namespace ExcelMate
             this.ExportCount_Label.Location = new System.Drawing.Point(0, 0);
             this.ExportCount_Label.Name = "ExportCount_Label";
             this.ExportCount_Label.Padding = new System.Windows.Forms.Padding(0, 20, 0, 0);
-            this.ExportCount_Label.Size = new System.Drawing.Size(68, 53);
+            this.ExportCount_Label.Size = new System.Drawing.Size(117, 53);
             this.ExportCount_Label.TabIndex = 8;
-            this.ExportCount_Label.Text = "Export Count";
+            this.ExportCount_Label.Text = "Row Count";
             // 
             // splitContainer1
             // 

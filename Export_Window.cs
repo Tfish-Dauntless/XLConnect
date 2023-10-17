@@ -67,7 +67,7 @@ namespace ExcelMate
                 Regex tableNameRegex = new Regex(@"FROM.*?\..*?\.(?<tablename>.*?)(?:\n|WHERE|$)");
                 Regex fromLineRegex = new Regex(@"FROM(?<from>.*?)(?:\n|WHERE|$)");
                 Regex innerColumnRegex = new Regex(@"(?<innerColumn>\[[^\[]+$)");
-                Regex whereClausRegex = new Regex(@"FROM.*?(?:\n|$)WHERE(?<whereclaus>.*?)(?:\n|$)");
+                Regex whereClausRegex = new Regex(@"(?!.*?\))WHERE(?<whereclaus>.*?)(?:\n|$)");
 
 
                 Match columnMatch = Columnregex.Match(Query);
@@ -248,14 +248,13 @@ namespace ExcelMate
 
                 if (!TableOnly && $"[{DataBaseName.Trim()}]" != adjustedDBContext_Db.Trim())
                 {
-                    MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db.Trim()}\nField: [{DataBaseName.Trim()}] ");
-                    return;
+                    MessageBox.Show($"Warning: \n\nDataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db.Trim()}\nField: [{DataBaseName.Trim()}] ");
                 }
 
                 if (!TableOnly && $"[{TableName.Trim()}]" != adjustedDBContext_Table.Trim())
                 {
-                    MessageBox.Show($"Table in Query and Table Field do not match.\nQuery: {adjustedDBContext_Table.Trim()}\nField:   [{TableName.Trim()}] ");
-                    return;
+                    MessageBox.Show($"Warning: \n\nTable in Query and Table Field do not match.\nQuery: {adjustedDBContext_Table.Trim()}\nField:   [{TableName.Trim()}] ");
+                   
                 }
 
                 if(ExportLocation_TextBox.Text == null || ExportLocation_TextBox.Text == String.Empty)
