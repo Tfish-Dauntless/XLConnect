@@ -48,8 +48,10 @@ namespace ExcelMate
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
+            this.Qualifier_TextBox = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
+            this.Delimiter_TextBox = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
             this.ExportType_Label = new System.Windows.Forms.Label();
             this.ExportType_ComboBox = new System.Windows.Forms.ComboBox();
@@ -57,8 +59,6 @@ namespace ExcelMate
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.panel7 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.Qualifier_TextBox = new System.Windows.Forms.TextBox();
-            this.Delimiter_TextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.RowsPerSheet_NumBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -292,6 +292,14 @@ namespace ExcelMate
             this.label2.TabIndex = 3;
             this.label2.Text = "Quote Qualifier :";
             // 
+            // Qualifier_TextBox
+            // 
+            this.Qualifier_TextBox.Dock = System.Windows.Forms.DockStyle.Right;
+            this.Qualifier_TextBox.Location = new System.Drawing.Point(92, 0);
+            this.Qualifier_TextBox.Name = "Qualifier_TextBox";
+            this.Qualifier_TextBox.Size = new System.Drawing.Size(147, 20);
+            this.Qualifier_TextBox.TabIndex = 2;
+            // 
             // panel3
             // 
             this.panel3.Controls.Add(this.label1);
@@ -310,6 +318,14 @@ namespace ExcelMate
             this.label1.Size = new System.Drawing.Size(57, 24);
             this.label1.TabIndex = 1;
             this.label1.Text = "Delimiter :";
+            // 
+            // Delimiter_TextBox
+            // 
+            this.Delimiter_TextBox.Dock = System.Windows.Forms.DockStyle.Right;
+            this.Delimiter_TextBox.Location = new System.Drawing.Point(92, 0);
+            this.Delimiter_TextBox.Name = "Delimiter_TextBox";
+            this.Delimiter_TextBox.Size = new System.Drawing.Size(147, 20);
+            this.Delimiter_TextBox.TabIndex = 0;
             // 
             // panel4
             // 
@@ -392,22 +408,6 @@ namespace ExcelMate
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(200, 53);
             this.panel2.TabIndex = 9;
-            // 
-            // Qualifier_TextBox
-            // 
-            this.Qualifier_TextBox.Dock = System.Windows.Forms.DockStyle.Right;
-            this.Qualifier_TextBox.Location = new System.Drawing.Point(92, 0);
-            this.Qualifier_TextBox.Name = "Qualifier_TextBox";
-            this.Qualifier_TextBox.Size = new System.Drawing.Size(147, 20);
-            this.Qualifier_TextBox.TabIndex = 2;
-            // 
-            // Delimiter_TextBox
-            // 
-            this.Delimiter_TextBox.Dock = System.Windows.Forms.DockStyle.Right;
-            this.Delimiter_TextBox.Location = new System.Drawing.Point(92, 0);
-            this.Delimiter_TextBox.Name = "Delimiter_TextBox";
-            this.Delimiter_TextBox.Size = new System.Drawing.Size(147, 20);
-            this.Delimiter_TextBox.TabIndex = 0;
             // 
             // Export_Window
             // 

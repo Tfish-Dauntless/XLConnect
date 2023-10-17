@@ -17,7 +17,7 @@ namespace XLConnect.Classes
     {
         Data_Helper Helper {  get; set; }
        
-        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,string tableName,List<string>headers,string exportType,char delim,char qualifier)
+        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,string tableName,List<string>headers,string exportType,char delim,char qualifier,int rowcap = 0)
         {
             try
             {
@@ -51,31 +51,47 @@ namespace XLConnect.Classes
                                 case "dat":
                                 case "txt":
                                 case "csv":
-                                    using (var tw = File.CreateText(exportLocation))
+                                    int count = 1;
+                                    int fcount = 1;
+                                    var fname = exportLocation;
+                                    var tw = File.CreateText(fname);
+
+                                    var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
+                                    tw.Write(combinedHeaders.Replace("[", "").Replace("]", "") + "\r\n");
+                                    while (await reader.ReadAsync())
                                     {
-                                       
-                                        var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
-                                        tw.Write(combinedHeaders.Replace("[","").Replace("]","")+ "\r\n");
-                                        while (await reader.ReadAsync())
+                                        
+                                        //MessageBox.Show("Reading");
+                                        for (int i = 0; i < reader.FieldCount; i++)
                                         {
-                                            //MessageBox.Show("Reading");
-                                            for (int i = 0; i < reader.FieldCount; i++)
+                                            if (i != 0)
                                             {
-                                                if (i != 0)
-                                                {
-                                                    tw.Write(delim);
-                                                }
-
-                                                string val = reader[i] == null ? null :  Helper.FormatValue(reader[i]);
-
-
-                                                tw.Write(qualifier);
-                                                tw.Write(val.Replace(qualifier.ToString(), $"{qualifier}{qualifier}"));
-                                                tw.Write(qualifier);
+                                                tw.Write(delim);
                                             }
-                                            tw.Write("\r\n");
+
+                                            string val = reader[i] == null ? null : Helper.FormatValue(reader[i]);
+
+
+                                            tw.Write(qualifier);
+                                            tw.Write(val.Replace(qualifier.ToString(), $"{qualifier}{qualifier}"));
+                                            tw.Write(qualifier);
                                         }
+                                        tw.Write("\r\n");
+                                        if (count > rowcap)
+                                        {
+                                            var toReplace = fcount > 1 ? $"_{fcount - 1}." : ".";
+                                            fname = Helper.ReplaceLastOccurrence(fname, toReplace, $"_{fcount}.");
+                                            fcount += 1;
+                                            tw.Close();
+                                            tw.Dispose();
+                                            tw = File.CreateText(fname);
+                                            tw.Write(combinedHeaders.Replace("[", "").Replace("]", "") + "\r\n");
+                                            count = 1;
+                                        }
+                                        count += 1;
                                     }
+                                    tw.Close();
+                                    tw.Dispose();
                                     break;
                                 case "xlsx":
                                     var Template = new FileInfo(exportLocation);

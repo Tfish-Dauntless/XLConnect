@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XLConnect.Classes;
+using static OfficeOpenXml.ExcelErrorValue;
 
 namespace ExcelMate
 {
@@ -276,15 +277,16 @@ namespace ExcelMate
                     qual = 'þ';
                 }
 
+                var rowCap = MaxRowSize_CheckBox.Checked ? Convert.ToInt32(RowsPerSheet_NumBox.Value) : 999999;
 
                 if (TableOnly)
                 {
-                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), PassedHeaders, ExportType_ComboBox.Text, delim, qual);
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), PassedHeaders, ExportType_ComboBox.Text, delim, qual, rowCap);
                 }
                 else
                 {
                     //MessageBox.Show(Query);
-                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual);
+                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual, rowCap);
                 }
                 
 
