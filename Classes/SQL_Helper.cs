@@ -18,7 +18,7 @@ namespace XLConnect.Classes
     {
         Data_Helper Helper {  get; set; }
        
-        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,string tableName,List<string>headers,string exportType,char delim,char qualifier, IProgress<ProgressBarHelper> progress, int rowcap = 0,int totalCount = 0)
+        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,string tableName,string exportType,char delim,char qualifier, IProgress<ProgressBarHelper> progress, int rowcap = 0,int totalCount = 0)
         {
             try
             {
@@ -40,9 +40,9 @@ namespace XLConnect.Classes
                     _con.Open();
 
                     //MessageBox.Show($"Connection Open\nnew FilePath: {exportLocation}");
-                    MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}\nHeaders: {String.Join(",", headers)}");
+                    //MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}\nHeaders: {String.Join(",", headers)}");
 
-                    MessageBox.Show(query);
+                    //MessageBox.Show(query);
 
                     using (SqlCommand _cmd2 = new SqlCommand(query, _con))
                     {
@@ -54,6 +54,13 @@ namespace XLConnect.Classes
                             int fcount = 1;
                             var fname = exportLocation;
 
+                            var columns = new List<string>();
+
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                columns.Add(reader.GetName(i));
+                            }
+
                             switch (exportType.ToLower())
                             {
                                 case "dat":
@@ -62,8 +69,9 @@ namespace XLConnect.Classes
                                     
                                     var tw = File.CreateText(fname);
 
-                                    var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
+                                    var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", columns)}{qualifier}");
                                     tw.Write(combinedHeaders.Replace("[", "").Replace("]", "") + "\r\n");
+
                                     while (await reader.ReadAsync())
                                     {
                                         
@@ -110,7 +118,8 @@ namespace XLConnect.Classes
                                     var wsCards = xlPackage.Workbook.Worksheets.Add(tableName);
                                     int row = 1, col = 1;
 
-                                    foreach (var column in headers)
+                                   
+                                    foreach (var column in columns)
                                     {
                                         wsCards.Cells[1, col].Value = Helper.StripString(column.Replace("[", "").Replace("]", ""));
                                         col+=1;
@@ -123,7 +132,7 @@ namespace XLConnect.Classes
                                         row++;
                                         for (col = 1; col <= reader.FieldCount; col++)
                                         {
-                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1);
+                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1).ToString() == String.Empty ? Helper.ToNullSafeString( reader.GetValue(col - 1)) : reader.GetValue(col - 1);
                                         }
                                         if (count > rowcap)
                                         {
@@ -138,7 +147,7 @@ namespace XLConnect.Classes
                                             row = 1;
                                             col = 1;
                                             var newcol = 1;
-                                            foreach (var column in headers)
+                                            foreach (var column in columns)
                                             {
                                                 wsCards.Cells[1, col].Value = Helper.StripString(column.Replace("[", "").Replace("]", ""));
                                                 col += 1;
@@ -289,7 +298,7 @@ namespace XLConnect.Classes
 
                 string connectionString = @"Data Source=" + server + ";Initial Catalog=" + database + ";Integrated Security=True;Timeout=32767";
 
-                string query = $@"Select Column_Name FROM  INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tablename}' ORDER BY [Column_Name]";
+                string query = $@"Select Column_Name FROM  INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tablename}'";
 
 
                 DataTable table = new DataTable();

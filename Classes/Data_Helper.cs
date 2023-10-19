@@ -205,6 +205,10 @@ namespace XLConnect.Classes
 
             return source.Remove(place, find.Length).Insert(place, replace);
         }
+        public string ToNullSafeString(object obj)
+        {
+            return (obj ?? string.Empty).ToString();
+        }
         public string StripString(string input)
         {
             // var line = input.Trim().Replace(System.Environment.NewLine, " ");

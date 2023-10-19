@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OfficeOpenXml;
@@ -438,8 +439,6 @@ namespace XLConnect
         {
             try
             {
-
-
                 using (StreamWriter outfilelocation = new StreamWriter(Import_Textbox.Text + "\\ErrorList.Txt"))
                 {
 
@@ -535,22 +534,41 @@ namespace XLConnect
 
                     //MessageBox.Show(query);
                     var TableexportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, query, DBCOMBOBOX.Text, Table_Combobox.Text,true, RawHeaders);
-                    TableexportWindow.Show();
-                    if(TableexportWindow.DialogResult == DialogResult.OK || TableexportWindow.DialogResult == DialogResult.Cancel)
-                    {
-                        RawHeaders.Clear();
-                        adjustedHeaders.Clear();
-                        TableexportWindow.Dispose();
-                    }
+                    
+
+                    Thread tableExportThread = new Thread(
+                       delegate ()
+                       {
+                           TableexportWindow.ShowDialog();
+                           if (TableexportWindow.DialogResult == DialogResult.OK || TableexportWindow.DialogResult == DialogResult.Cancel)
+                           {
+                               RawHeaders.Clear();
+                               adjustedHeaders.Clear();
+                               TableexportWindow.Dispose();
+                           }
+                       });
+                    tableExportThread.SetApartmentState(ApartmentState.STA);
+                    tableExportThread.Start();
+                    tableExportThread.Join();
+                    
                     
                     break;
                 case 2:
                     var exportWindow = new ExcelMate.Export_Window(Table, SQLHELPER, DataHelper, Server_TextBox.Text, Query_Box.Text, DBCOMBOBOX.Text, Table_Combobox.Text);
-                    exportWindow.Show();
-                    if (exportWindow.DialogResult == DialogResult.OK || exportWindow.DialogResult == DialogResult.Cancel)
-                    {
-                        exportWindow.Dispose();
-                    }
+                    Thread CustomQueryExportThread = new Thread(
+                       delegate ()
+                       {
+                           exportWindow.ShowDialog();
+                           if (exportWindow.DialogResult == DialogResult.OK || exportWindow.DialogResult == DialogResult.Cancel)
+                           {
+                               exportWindow.Dispose();
+                           }
+                       });
+                    CustomQueryExportThread.SetApartmentState(ApartmentState.STA);
+                    CustomQueryExportThread.Start();
+                    CustomQueryExportThread.Join();
+
+                   
                     break;
             }
 

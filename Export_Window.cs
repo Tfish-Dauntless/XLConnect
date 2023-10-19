@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XLConnect.Classes;
@@ -248,17 +249,18 @@ namespace ExcelMate
                 var adjustedDBContext_Table = dbcontext["TableName"].Contains("[") ? dbcontext["TableName"] : $"[{dbcontext["TableName"]}]";
 
                 //MessageBox.Show($"DataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db}\nField: [{DataBaseName}] ");
+                //MessageBox.Show($"");
 
-                if (!TableOnly && $"[{DataBaseName.Trim()}]" != adjustedDBContext_Db.Trim())
-                {
-                    MessageBox.Show($"Warning: \n\nDataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db.Trim()}\nField: [{DataBaseName.Trim()}] ");
-                }
+                //if (!TableOnly && $"[{DataBaseName.Trim()}]" != adjustedDBContext_Db.Trim())
+                //{
+                //    MessageBox.Show($"Warning: \n\nDataBase in Query and DataBase Field do not match.\nQuery: {adjustedDBContext_Db.Trim()}\nField: [{DataBaseName.Trim()}] ");
+                //}
 
-                if (!TableOnly && $"[{TableName.Trim()}]" != adjustedDBContext_Table.Trim())
-                {
-                    MessageBox.Show($"Warning: \n\nTable in Query and Table Field do not match.\nQuery: {adjustedDBContext_Table.Trim()}\nField:   [{TableName.Trim()}] ");
+                //if (!TableOnly && $"[{TableName.Trim()}]" != adjustedDBContext_Table.Trim())
+                //{
+                //    MessageBox.Show($"Warning: \n\nTable in Query and Table Field do not match.\nQuery: {adjustedDBContext_Table.Trim()}\nField:   [{TableName.Trim()}] ");
                    
-                }
+                //}
 
                 if(ExportLocation_TextBox.Text == null || ExportLocation_TextBox.Text == String.Empty)
                 {
@@ -299,17 +301,61 @@ namespace ExcelMate
                     var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryforCount);
                     RowsToExport.Text = $"Exporting";
                     ExportCount_Label.Text = $"{totalCount} Rows";
-                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, DataBaseName,TableName, PassedHeaders, ExportType_ComboBox.Text, delim, qual, Progress, rowCap, 100);
+                    await Task.WhenAll(Task.Run(async () =>
+                    {
+                        var exportComboBoxValue = "";
+                        this.Invoke(new MethodInvoker(delegate
+                        {
+                            exportComboBoxValue = ExportType_ComboBox.Text;
+                        }));
+                        await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, DataBaseName, TableName, exportComboBoxValue, delim, qual, Progress, rowCap, totalCount);
+                    }));
+                   
+                    //Thread TableOnlyexport = new Thread( async
+                    //  delegate ()
+                    //  {
+                    //      this.Invoke(new MethodInvoker(async delegate
+                    //      {
+
+                    //      }));
+
+
+                    //  });
+                    //TableOnlyexport.SetApartmentState(ApartmentState.STA);
+                    //TableOnlyexport.Start();
+                    //TableOnlyexport.Join();
+
                 }
                 else
                 {
-                    //MessageBox.Show(Query);
-                    var queryforCount = $" SELECT COUNT(*)  [{dbcontext["FromStatement"]}]";
-                    MessageBox.Show(queryforCount);
-                    //var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryforCount);
-                    //RowsToExport.Text = $"Exporting";
-                    //ExportCount_Label.Text = $"{totalCount} Rows";
-                    await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), dbcontext["Columns"].Split(',').ToList(), ExportType_ComboBox.Text, delim, qual, Progress,rowCap, 100);
+                    MessageBox.Show(Query);
+                    Regex queryforCountRegex = new Regex(@"(?s)FROM(?!,|_).*(?i)(?<replaceOrderBY>Order.BY.*$)");
+                    
+                    var queryforCount = $" SELECT COUNT(*)  {dbcontext["FromStatement"]}";
+                    Match queryforCountnMatch = queryforCountRegex.Match(queryforCount);
+                    var queryForCountTrimmed = queryforCount.Replace(queryforCountnMatch.Groups["replaceOrderBY"].Value, "");
+                    MessageBox.Show(queryForCountTrimmed);
+                    var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryForCountTrimmed);
+                    RowsToExport.Text = $"Exporting";
+                    ExportCount_Label.Text = $"{totalCount} Rows";
+                    await Task.WhenAll(Task.Run(async () =>
+                    {
+                        var exportComboBoxValue = "";
+                        this.Invoke(new MethodInvoker(delegate
+                          {
+                              exportComboBoxValue = ExportType_ComboBox.Text;
+                          }));
+                        await SQLHelper.RunSqlQuery_New(Helper, exportname, Query, ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), adjustedDBContext_Table.Replace("[", "").Replace("]", ""), exportComboBoxValue, delim, qual, Progress, rowCap, totalCount);
+                    }));
+                    // Thread Customexport = new Thread(async
+                    //delegate ()
+                    // {
+
+                    // });
+                    // Customexport.SetApartmentState(ApartmentState.STA);
+                    // Customexport.Start();
+                    // Customexport.Join();
+
                 }
                 
 
