@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace XLConnect.Classes
 {
@@ -17,12 +18,15 @@ namespace XLConnect.Classes
     {
         Data_Helper Helper {  get; set; }
        
-        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,string tableName,List<string>headers,string exportType,char delim,char qualifier)
+        public async Task<bool> RunSqlQuery_New(Data_Helper helper,string exportLocation,string query, string ServerName, string dataBaseName,string tableName,string exportType,char delim,char qualifier, IProgress<ProgressBarHelper> progress, int rowcap = 0,int totalCount = 0)
         {
             try
             {
                 Helper = helper;
                 string connectionString = @"Data Source=" + ServerName + ";Initial Catalog=" + dataBaseName + ";Integrated Security=True;Timeout=32767";
+
+                var progressbar = new ProgressBarHelper();
+                var rowsExtracted = new List<string>();
                 //List<string>fixedHeaders = new List<string>();
 
                 //foreach(var header in headers)
@@ -36,9 +40,9 @@ namespace XLConnect.Classes
                     _con.Open();
 
                     //MessageBox.Show($"Connection Open\nnew FilePath: {exportLocation}");
-                    MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}\nHeaders: {String.Join(",", headers)}");
+                    //MessageBox.Show($"Location: {exportLocation}\nServerName{ServerName}\nDataBase: {dataBaseName}\nExportType: {exportType}\nDelim: {delim}\nQualifier: {qualifier}\nHeaders: {String.Join(",", headers)}");
 
-                    MessageBox.Show(query);
+                    //MessageBox.Show(query);
 
                     using (SqlCommand _cmd2 = new SqlCommand(query, _con))
                     {
@@ -46,76 +50,124 @@ namespace XLConnect.Classes
 
                         using (var reader = await _cmd2.ExecuteReaderAsync())
                         {
+                            int count = 1;
+                            int fcount = 1;
+                            var fname = exportLocation;
+
+                            var columns = new List<string>();
+
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                columns.Add(reader.GetName(i));
+                            }
+
                             switch (exportType.ToLower())
                             {
                                 case "dat":
                                 case "txt":
                                 case "csv":
-                                    using (var tw = File.CreateText(exportLocation))
+                                    
+                                    var tw = File.CreateText(fname);
+
+                                    var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", columns)}{qualifier}");
+                                    tw.Write(combinedHeaders.Replace("[", "").Replace("]", "") + "\r\n");
+
+                                    while (await reader.ReadAsync())
                                     {
-                                       
-                                        var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
-                                        tw.Write(combinedHeaders.Replace("[","").Replace("]","")+ "\r\n");
-                                        while (await reader.ReadAsync())
+                                        
+                                        //MessageBox.Show("Reading");
+                                        for (int i = 0; i < reader.FieldCount; i++)
                                         {
-                                            //MessageBox.Show("Reading");
-                                            for (int i = 0; i < reader.FieldCount; i++)
+                                            if (i != 0)
                                             {
-                                                if (i != 0)
-                                                {
-                                                    tw.Write(delim);
-                                                }
-
-                                                string val = reader[i] == null ? null :  Helper.FormatValue(reader[i]);
-
-
-                                                tw.Write(qualifier);
-                                                tw.Write(val.Replace(qualifier.ToString(), $"{qualifier}{qualifier}"));
-                                                tw.Write(qualifier);
+                                                tw.Write(delim);
                                             }
-                                            tw.Write("\r\n");
+
+                                            string val = reader[i] == null ? null : Helper.FormatValue(reader[i]);
+
+
+                                            tw.Write(qualifier);
+                                            tw.Write(val.Replace(qualifier.ToString(), $"{qualifier}{qualifier}"));
+                                            tw.Write(qualifier);
                                         }
+                                        tw.Write("\r\n");
+                                        if (count > rowcap)
+                                        {
+                                            var toReplace = fcount > 1 ? $"_{fcount - 1}." : ".";
+                                            fname = Helper.ReplaceLastOccurrence(fname, toReplace, $"_{fcount}.");
+                                            fcount += 1;
+                                            tw.Close();
+                                            tw.Dispose();
+                                            tw = File.CreateText(fname);
+                                            tw.Write(combinedHeaders.Replace("[", "").Replace("]", "") + "\r\n");
+                                            count = 1;
+                                        }
+                                        count += 1;
+                                        rowsExtracted.Add(count.ToString());
+                                        progressbar.files = rowsExtracted;
+                                        progressbar.Percentage = (rowsExtracted.Count) * 100 / totalCount;
+
+                                        progress.Report(progressbar);
                                     }
+                                    tw.Close();
+                                    tw.Dispose();
                                     break;
                                 case "xlsx":
-                                    var Template = new FileInfo(exportLocation);
+                                    var Template = new FileInfo(fname);
                                     var xlPackage = new ExcelPackage(Template);
                                     var wsCards = xlPackage.Workbook.Worksheets.Add(tableName);
                                     int row = 1, col = 1;
 
-
-
-                                    //foreach (DataRow rw in schemaTable.Rows)
-                                    //{
-                                    // Write the headers to the first row
-                                    //var combinedHeaders = Helper.StripString($"{qualifier}{String.Join($"{qualifier}{delim}{qualifier}", headers)}{qualifier}");
-                                    foreach (var column in headers)
+                                   
+                                    foreach (var column in columns)
                                     {
-                                        
-                                        // Condition Will only be required if you want to write 
-                                        // specific column names
-                                        //if (column.ColumnName == "ColumnName")
-                                        //{ 
-
                                         wsCards.Cells[1, col].Value = Helper.StripString(column.Replace("[", "").Replace("]", ""));
-                                        col++;
-                                        //}
+                                        col+=1;
+                                        
                                     }
-                                    //}
+                                    
                                     while (await reader.ReadAsync())
                                     {
                                         //MessageBox.Show("Reading While Loop");
                                         row++;
                                         for (col = 1; col <= reader.FieldCount; col++)
                                         {
-                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1);
+                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1) == String.Empty ? DBNull.Value : reader.GetValue(col - 1);
                                         }
+                                        if (count > rowcap)
+                                        {
+                                            var toReplace = fcount > 1 ? $"_{fcount - 1}." : ".";
+                                            fname = Helper.ReplaceLastOccurrence(fname, toReplace, $"_{fcount}.");
+                                            fcount += 1;
+                                            xlPackage.SaveAs(Template);
+                                            //xlPackage.Dispose();
+                                            Template = new FileInfo(fname);
+                                            xlPackage = new ExcelPackage(Template);
+                                            wsCards = xlPackage.Workbook.Worksheets.Add(tableName);
+                                            row = 1;
+                                            col = 1;
+                                            var newcol = 1;
+                                            foreach (var column in columns)
+                                            {
+                                                wsCards.Cells[1, col].Value = Helper.StripString(column.Replace("[", "").Replace("]", ""));
+                                                col += 1;
+
+                                            }
+                                            count = 1;
+                                        }
+                                        count += 1;
+                                        rowsExtracted.Add(count.ToString());
+                                        progressbar.files = rowsExtracted;
+                                        progressbar.Percentage = (rowsExtracted.Count) * 100 / totalCount;
+
+                                        progress.Report(progressbar);
                                     }
                                     xlPackage.SaveAs(Template);
                                     xlPackage.Dispose();
                                 break;
                             }
                         }
+                        rowsExtracted.Clear();
                     }
 
                     //MessageBox.Show("Export Table Populated");
@@ -127,11 +179,43 @@ namespace XLConnect.Classes
             }
             catch(Exception e)
             {
-                MessageBox.Show(e.Message +"\n\n"+ e.StackTrace);
-                throw new Exception(e.Message);
+                MessageBox.Show(e.Message +"\n\n"+ query+ "\n\n" + e.StackTrace);
+                throw new Exception(e.Message + "\n\n" + query + "\n\n" + e.StackTrace);
             }
         }
+        public async Task<int> getSQLCOUNT(string server, string database, string query)
+        {
 
+            try
+            {
+                int valuetoreutrn = 0;
+                string connectionString = @"Data Source=" + server + ";Initial Catalog=" + database + ";Integrated Security=True;Timeout=32767";
+               // MessageBox.Show( query);
+                using (SqlConnection _con = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand _cmd = new SqlCommand(query, _con))
+                    {
+                        _cmd.CommandTimeout = 32767;
+                        await _con.OpenAsync();
+                        int count = (int)_cmd.ExecuteScalar();
+                        valuetoreutrn = count;
+
+                    }
+
+                }
+                return valuetoreutrn;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Message: {e.Message}\nStackTrace: {e.StackTrace}");
+                return 0;
+
+            }
+
+
+
+
+        }
 
         public async Task<bool> RunSQLQuery(string query,string ServerName,string dataBaseName,DataTable Table)
         {
@@ -214,7 +298,7 @@ namespace XLConnect.Classes
 
                 string connectionString = @"Data Source=" + server + ";Initial Catalog=" + database + ";Integrated Security=True;Timeout=32767";
 
-                string query = $@"Select Column_Name FROM  INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tablename}' ORDER BY [Column_Name]";
+                string query = $@"Select Column_Name FROM  INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tablename}'";
 
 
                 DataTable table = new DataTable();

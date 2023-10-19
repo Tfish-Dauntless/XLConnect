@@ -72,6 +72,7 @@ namespace XLConnect
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.Export_Button = new System.Windows.Forms.Button();
             this.Run_Button = new System.Windows.Forms.Button();
+            this.SkipFirstRow_CheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -222,6 +223,7 @@ namespace XLConnect
             this.Data_Tab.SelectedIndex = 0;
             this.Data_Tab.Size = new System.Drawing.Size(800, 492);
             this.Data_Tab.TabIndex = 1;
+            this.Data_Tab.SelectedIndexChanged += new System.EventHandler(this.Data_Tab_SelectedIndexChanged);
             // 
             // Import_Tab
             // 
@@ -258,9 +260,9 @@ namespace XLConnect
             // 
             this.panel3.Controls.Add(this.Error_RichTextBox);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(0, 48);
+            this.panel3.Location = new System.Drawing.Point(0, 62);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(786, 366);
+            this.panel3.Size = new System.Drawing.Size(786, 352);
             this.panel3.TabIndex = 1;
             // 
             // Error_RichTextBox
@@ -268,7 +270,7 @@ namespace XLConnect
             this.Error_RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Error_RichTextBox.Location = new System.Drawing.Point(0, 0);
             this.Error_RichTextBox.Name = "Error_RichTextBox";
-            this.Error_RichTextBox.Size = new System.Drawing.Size(786, 366);
+            this.Error_RichTextBox.Size = new System.Drawing.Size(786, 352);
             this.Error_RichTextBox.TabIndex = 0;
             this.Error_RichTextBox.Text = "";
             // 
@@ -279,7 +281,7 @@ namespace XLConnect
             this.Options_GroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.Options_GroupBox.Location = new System.Drawing.Point(0, 0);
             this.Options_GroupBox.Name = "Options_GroupBox";
-            this.Options_GroupBox.Size = new System.Drawing.Size(786, 48);
+            this.Options_GroupBox.Size = new System.Drawing.Size(786, 62);
             this.Options_GroupBox.TabIndex = 0;
             this.Options_GroupBox.TabStop = false;
             this.Options_GroupBox.Text = "Options";
@@ -292,7 +294,7 @@ namespace XLConnect
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel5.Location = new System.Drawing.Point(346, 16);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(437, 29);
+            this.panel5.Size = new System.Drawing.Size(437, 43);
             this.panel5.TabIndex = 5;
             // 
             // Delimiter_TextBox
@@ -314,12 +316,13 @@ namespace XLConnect
             // 
             // panel6
             // 
+            this.panel6.Controls.Add(this.SkipFirstRow_CheckBox);
             this.panel6.Controls.Add(this.headerRow_Label);
             this.panel6.Controls.Add(this.headerRow_TextBox);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel6.Location = new System.Drawing.Point(0, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(182, 29);
+            this.panel6.Size = new System.Drawing.Size(182, 43);
             this.panel6.TabIndex = 4;
             // 
             // headerRow_Label
@@ -347,7 +350,7 @@ namespace XLConnect
             this.panel4.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel4.Location = new System.Drawing.Point(3, 16);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(343, 29);
+            this.panel4.Size = new System.Drawing.Size(343, 43);
             this.panel4.TabIndex = 4;
             // 
             // SheetSpecification_Label
@@ -529,6 +532,7 @@ namespace XLConnect
             this.Clear_Button.TabIndex = 3;
             this.Clear_Button.Text = "Clear";
             this.Clear_Button.UseVisualStyleBackColor = true;
+            this.Clear_Button.Visible = false;
             this.Clear_Button.Click += new System.EventHandler(this.Clear_Button_Click);
             // 
             // progressBar1
@@ -541,23 +545,35 @@ namespace XLConnect
             // 
             // Export_Button
             // 
-            this.Export_Button.Location = new System.Drawing.Point(346, 19);
+            this.Export_Button.Location = new System.Drawing.Point(316, 19);
             this.Export_Button.Name = "Export_Button";
             this.Export_Button.Size = new System.Drawing.Size(116, 28);
             this.Export_Button.TabIndex = 1;
             this.Export_Button.Text = "Export";
             this.Export_Button.UseVisualStyleBackColor = true;
+            this.Export_Button.Visible = false;
             this.Export_Button.Click += new System.EventHandler(this.Export_Button_Click);
             // 
             // Run_Button
             // 
-            this.Run_Button.Location = new System.Drawing.Point(173, 19);
+            this.Run_Button.Location = new System.Drawing.Point(316, 19);
             this.Run_Button.Name = "Run_Button";
             this.Run_Button.Size = new System.Drawing.Size(114, 28);
             this.Run_Button.TabIndex = 0;
-            this.Run_Button.Text = "Run";
+            this.Run_Button.Text = "Import";
             this.Run_Button.UseVisualStyleBackColor = true;
             this.Run_Button.Click += new System.EventHandler(this.Run_Button_Click);
+            // 
+            // SkipFirstRow_CheckBox
+            // 
+            this.SkipFirstRow_CheckBox.AutoSize = true;
+            this.SkipFirstRow_CheckBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.SkipFirstRow_CheckBox.Location = new System.Drawing.Point(0, 26);
+            this.SkipFirstRow_CheckBox.Name = "SkipFirstRow_CheckBox";
+            this.SkipFirstRow_CheckBox.Size = new System.Drawing.Size(182, 17);
+            this.SkipFirstRow_CheckBox.TabIndex = 4;
+            this.SkipFirstRow_CheckBox.Text = "Skip First Row on Import?";
+            this.SkipFirstRow_CheckBox.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -647,6 +663,7 @@ namespace XLConnect
         private System.Windows.Forms.ListBox headers_listbox;
         private System.Windows.Forms.GroupBox orderby_GroupBox;
         private System.Windows.Forms.ListBox sortOrder_ListBox;
+        private System.Windows.Forms.CheckBox SkipFirstRow_CheckBox;
     }
 }
 

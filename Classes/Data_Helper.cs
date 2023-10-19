@@ -1,4 +1,5 @@
-﻿using Sylvan.Data.Csv;
+﻿using OfficeOpenXml;
+using Sylvan.Data.Csv;
 using Sylvan.Data.Excel;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace XLConnect.Classes
         public async Task<string> DetermineFileDelimiter(string extension,List<string>FileLines)
         {
             //MessageBox.Show("Determin File Demiliter");
-            List<string> delimiters = new List<string> { "\t", ";", "-", ",", "|","*","~","^" };
+            List<string> delimiters = new List<string> { "\t", ";", ",", "|"};
             Dictionary<string, int> counts = delimiters.ToDictionary(key => key, value => 0);
             string Delimiter = "|";
 
@@ -69,116 +70,106 @@ namespace XLConnect.Classes
             }
             return Delimiter;
         }
-        public async Task<List<string[]>> GetWorkSheetdataAsList(ExcelDataReader edr, string type = "normal", CsvDataReader csv = null,List<string> filelines = null,string delimiter = null)
-        {
-            ExcelFormat format = null;
-            ExcelDataType etype = new ExcelDataType();
 
+        public async Task<List<string[]>> GetWorkSheetdataAsList(Sylvan.Data.Excel.ExcelDataReader edr, CsvDataReader csv = null, System.Data.DataTable worksheet = null, ExcelWorksheet Ep_Worksheet = null, List<string> filelines = null, string delimiter = null,string quote = null)
+        {
             try
             {
+
                 List<string[]> textrowslist = new List<string[]>();
-                int procCount = 1;
                 if (csv != null)
                 {
-
+                    if (csv.RowFieldCount > 1000)
+                    {
+                        throw new Exception("Number of columns exceeds limit");
+                    }
                     while (await csv.ReadAsync())
                     {
+                        string[] textrows = new string[csv.RowFieldCount];
 
-                        var endcolumn = csv.RowFieldCount;
-
-                        string[] textrows = new string[endcolumn];
-
-                        for (int i = 0; i < endcolumn; i++)
+                        for (int i = 0; i < csv.RowFieldCount; i++)
                         {
-
-
-
-                            //newRow[i] = edr.GetExcelValue(i).ToString() == null ? String.Empty : edr.GetExcelValue(i).ToString();
                             textrows[i] = csv.GetString(i).ToString() == null ? String.Empty : csv.GetString(i).ToString();
                         }
                         textrowslist.Add(textrows);
-                        procCount += 1;
                     }
                 }
-                else if(filelines != null)
+                else if (worksheet != null)
+                {
+                    if (worksheet.Columns.Count > 1000)
+                    {
+                        throw new Exception("Number of columns exceeds limit");
+                    }
+                    for (var row = 0; row < worksheet.Rows.Count; row++)
+                    {
+                        textrowslist.Add(worksheet.Rows[row].ItemArray.Select(x => x.ToString()).ToArray());
+                    }
+                }
+                else if (filelines != null)
                 {
                     foreach (var line in filelines)
                     {
                         if (line.Length > 0)
                         {
-                            var splitOn = delimiter == "TAB" ? "\t" : delimiter;
-                            var splitline = line.Split(splitOn.ToCharArray()).ToArray();
+                            var splitOn = $"{quote}{delimiter}{quote}";
+                            var splitline = line.Split(splitOn.ToCharArray()).Select(x => x.Replace(quote,"")).ToArray();
                             textrowslist.Add(splitline);
-                          
                         }
                     }
+                }
+                else if (Ep_Worksheet != null)
+                {
+                    //Cells.Last(c => c.Start.Column == 1);//(c => Helper.StripString(c.Text) != null && Helper.StripString(c.Text) != String.Empty)
+                    var LastColumnWithText = Ep_Worksheet.Cells.Where(x => StripString(x.Text) != null && StripString(x.Text) != String.Empty).Max(y => Ep_Worksheet.Cells[y.Address].End.Column);
+                    //MessageBox.Show(LastColumnWithText.ToString());//Ep_Worksheet.Cells[LastColumnWithText].End.Column.ToString()
+                    for (var row = 1; row <= Ep_Worksheet.Dimension.End.Row; row++)
+                    {
+                        string[] textrows = new string[LastColumnWithText];
+                        //textrowslist.Add(Ep_Worksheet.Rows[row].Select(x => x.ToString()).ToArray());
+                        var wsRow = Ep_Worksheet.Cells[row, 1, row, LastColumnWithText];
+
+                        int index = 0;
+                        for (var cell = 1; cell <= LastColumnWithText; cell++)
+                        {
+                            textrows[cell - 1] = Ep_Worksheet.Cells[row, cell].Text ?? String.Empty;
+                        }
+                        textrowslist.Add(textrows);
+                    }
+
+                    return textrowslist;
                 }
                 else
                 {
                     while (await edr.ReadAsync())
                     {
-
+                        if (edr.RowFieldCount > 1000)
+                        {
+                            throw new Exception("Number of columns exceeds limit");
+                        }
                         var endcolumn = edr.RowFieldCount;
 
                         string[] textrows = new string[endcolumn];
 
                         for (int i = 0; i < endcolumn; i++)
                         {
-                            //var schem =  edr.GetColumnSchema();
+
+                            var formatt = edr.GetFormat(i);
 
                             //newRow[i] = edr.GetExcelValue(i).ToString() == null ? String.Empty : edr.GetExcelValue(i).ToString();
-                            //etype = edr.GetExcelDataType(i);
-
-                            format = edr.GetFormat(i);
-                            etype = edr.GetExcelDataType(i);
-
-                            //edr.GetFormat(i).Kind = FormatKind.String;
-                            //MessageBox.Show(format.ToString());
-                            //edr.GetExcelValue;
-
-                            //MessageBox.Show(edr.GetFormulaError(i).ToString());
-
-                            if (format.Kind == FormatKind.Number)
-                            {
-
-                                textrows[i] = (string)edr.GetString(i) == null ? String.Empty : (string)edr.GetString(i);
-                            }
-                            else
-                            {
-                                textrows[i] = edr.GetString(i);
-                            }
-
-
-                            //if (edr.GetFormulaError(i) == ExcelErrorCode.Value)//|| edr.GetString(i) == null
-                            //{
-
-                            //    textrows[i] = String.Empty;
-                            //}
-                            //else
-                            //{
-
-                            //}
+                            textrows[i] = edr.GetString(i).ToString() == null ? String.Empty : edr.GetString(i).ToString();
                         }
                         textrowslist.Add(textrows);
                     }
                 }
 
-                if (textrowslist.Count <= 0)
-                {
-                    throw new Exception("Worksheet is empty");
-                }
-
-
                 return textrowslist;
             }
             catch (Exception e)
             {
-
-                //MessageBox.Show($"Error is coming from GetWorkSheetdataAsList Method. Cell DataFormat:{format}.\nFormatKind: {format.Kind}\nCell DataType: {etype}\n{e.Message}\n{e.StackTrace}");
                 throw new Exception(e.Message);
             }
-
         }
+        
         public string FormatValue(object v)
         {
             if (v == null)
@@ -205,7 +196,19 @@ namespace XLConnect.Classes
             }
             return v.ToString();
         }
+        public string ReplaceLastOccurrence(string source, string find, string replace)
+        {
+            int place = source.LastIndexOf(find);
 
+            if (place == -1)
+                return source;
+
+            return source.Remove(place, find.Length).Insert(place, replace);
+        }
+        public string ToNullSafeString(object obj)
+        {
+            return (obj ?? string.Empty).ToString();
+        }
         public string StripString(string input)
         {
             // var line = input.Trim().Replace(System.Environment.NewLine, " ");
@@ -214,7 +217,7 @@ namespace XLConnect.Classes
             var trimmed = input.Replace(tab.ToString(), "").Replace(Environment.NewLine, " ").Trim();
             return Regex.Replace(trimmed.Replace("\t", " ").Replace("\r\n", " "), reduceMultiSpace, " ").ToUpper().Trim();
         }
-        public async Task<DataTable> FillDataTableFromList(List<string[]> Rows, int headerRow)
+        public async Task<DataTable> FillDataTableFromList(List<string[]> Rows, int headerRow, bool skiprow = false)
         {
             try
             {
@@ -258,6 +261,7 @@ namespace XLConnect.Classes
                         dt.Columns.Add($"DD_PlaceHolder_{ic}");
                     }
                 }
+                var StartingRow = false ? headerRow + 1 : headerRow;
                 foreach (var item in Rows.Skip(headerRow))
                 {
                    dt.Rows.Add(item);
@@ -311,22 +315,22 @@ namespace XLConnect.Classes
                 var columnstoAdd = new List<string>();
 
                // await SQLHELPER.GatherSqlColumns(ServerName, DataBaseName, TableName, newcols);
-                var currentColumns = (from dc in table.Columns.Cast<DataColumn>() select dc.ColumnName.ToUpper().Trim()).ToList();
+                var currentColumns = (from dc in table.Columns.Cast<DataColumn>() select dc.ColumnName.ToUpper().Trim()).Distinct().ToList();
 
-                // MessageBox.Show(String.Join(",", currentColumns));
-                foreach (var col in currentColumns.ToList())
-                {
-                    if (!newcols.Contains(col.ToUpper().Trim()))
-                    {
-                        columnstoAdd.Add(col.ToUpper().Trim());
-                    }
-                }
+                 //MessageBox.Show(String.Join(",", currentColumns));
+                //foreach (var col in currentColumns.ToList())
+                //{
+                //    if (!columnstoAdd.Contains(col.ToUpper().Trim()))
+                //    {
+                //        columnstoAdd.Add(col.ToUpper().Trim());
+                //    }
+                //}
                 //MessageBox.Show(columnstoAdd.Count.ToString() + "\n\n vs \n\n " + newcols.Count.ToString());
-                if (columnstoAdd.Count > 0)
-                {
-                    //MessageBox.Show("Total Columns in Data Table" + columnstoAdd.Count + "\n\n Total Columns in SQL:" + currentColumns.Count+ "\n\n Total Columns to Add: " + columnstoAdd.Count);
-                    await SQLHELPER.AddColumns(ServerName, DataBaseName, TableName, columnstoAdd);
-                }
+                //if (columnstoAdd.Count > 0)
+                //{
+                //    //MessageBox.Show("Total Columns in Data Table" + columnstoAdd.Count + "\n\n Total Columns in SQL:" + currentColumns.Count+ "\n\n Total Columns to Add: " + columnstoAdd.Count);
+                //    await SQLHELPER.AddColumns(ServerName, DataBaseName, TableName, columnstoAdd);
+                //}
 
 
                 var sql = await SQLHELPER.InsertDataIntoSQL(table, ServerName, DataBaseName, TableName);
