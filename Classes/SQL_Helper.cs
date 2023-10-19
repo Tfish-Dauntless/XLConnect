@@ -132,7 +132,7 @@ namespace XLConnect.Classes
                                         row++;
                                         for (col = 1; col <= reader.FieldCount; col++)
                                         {
-                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1).ToString() == String.Empty ? Helper.ToNullSafeString( reader.GetValue(col - 1)) : reader.GetValue(col - 1);
+                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1) == String.Empty ? DBNull.Value : reader.GetValue(col - 1);
                                         }
                                         if (count > rowcap)
                                         {

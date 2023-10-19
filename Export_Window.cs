@@ -328,13 +328,13 @@ namespace ExcelMate
                 }
                 else
                 {
-                    MessageBox.Show(Query);
+                   // MessageBox.Show(Query);
                     Regex queryforCountRegex = new Regex(@"(?s)FROM(?!,|_).*(?i)(?<replaceOrderBY>Order.BY.*$)");
                     
                     var queryforCount = $" SELECT COUNT(*)  {dbcontext["FromStatement"]}";
                     Match queryforCountnMatch = queryforCountRegex.Match(queryforCount);
                     var queryForCountTrimmed = queryforCount.Replace(queryforCountnMatch.Groups["replaceOrderBY"].Value, "");
-                    MessageBox.Show(queryForCountTrimmed);
+                    //MessageBox.Show(queryForCountTrimmed);
                     var totalCount = await SQLHelper.getSQLCOUNT(ServerName, adjustedDBContext_Db.Replace("[", "").Replace("]", ""), queryForCountTrimmed);
                     RowsToExport.Text = $"Exporting";
                     ExportCount_Label.Text = $"{totalCount} Rows";
