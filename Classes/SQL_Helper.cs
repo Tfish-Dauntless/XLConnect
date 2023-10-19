@@ -1,4 +1,6 @@
 ﻿using OfficeOpenXml;
+using OfficeOpenXml.Export.ToDataTable;
+using OfficeOpenXml.FormulaParsing;
 using Sylvan.Data;
 using System;
 using System.Collections;
@@ -132,7 +134,9 @@ namespace XLConnect.Classes
                                         row++;
                                         for (col = 1; col <= reader.FieldCount; col++)
                                         {
-                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1) == String.Empty ? DBNull.Value : reader.GetValue(col - 1);
+                                            ExcelCell nullcell = new ExcelCell(null, "", row, col);
+                                            wsCards.Cells[row, col].Value = reader.GetValue(col - 1) == String.Empty || reader.IsDBNull(col - 1) || reader.GetValue(col - 1) == null ? nullcell.Value : reader.GetValue(col - 1);
+
                                         }
                                         if (count > rowcap)
                                         {
