@@ -217,10 +217,11 @@ namespace XLConnect.Classes
             var trimmed = input.Replace(tab.ToString(), "").Replace(Environment.NewLine, " ").Trim();
             return Regex.Replace(trimmed.Replace("\t", " ").Replace("\r\n", " "), reduceMultiSpace, " ").ToUpper().Trim();
         }
-        public async Task<DataTable> FillDataTableFromList(List<string[]> Rows, int headerRow, bool skiprow = false)
+        public async Task<DataTable> FillDataTableFromList(List<string[]> Rows, int headerRow, bool skiprow)
         {
             try
             {
+                //MessageBox.Show(skiprow.ToString());
                 var headercount = new Dictionary<string, int>();
                 var dt = new DataTable();
                 foreach (var header in Rows[headerRow])
@@ -261,8 +262,8 @@ namespace XLConnect.Classes
                         dt.Columns.Add($"DD_PlaceHolder_{ic}");
                     }
                 }
-                var StartingRow = false ? headerRow + 1 : headerRow;
-                foreach (var item in Rows.Skip(headerRow))
+                var StartingRow = skiprow ? headerRow + 1 : headerRow;
+                foreach (var item in Rows.Skip(StartingRow))
                 {
                    dt.Rows.Add(item);
                 }
