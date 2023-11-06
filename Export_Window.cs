@@ -228,6 +228,7 @@ namespace ExcelMate
                         Qualifier_TextBox.Enabled = false;
                         break;
                 }
+                MaxRowSize_CheckBox.Checked = true;
             }
 
         }

@@ -783,6 +783,11 @@ namespace XLConnect
         {
             this.Text = $"{this.Text} {Assembly.GetExecutingAssembly().GetName().Version}";
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.Text = $"XL Connect: ";
+        }
     }
     
 }
