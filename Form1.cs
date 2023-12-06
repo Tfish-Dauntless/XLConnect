@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OfficeOpenXml;
+using Sylvan.Data;
 using Sylvan.Data.Csv;
 using Sylvan.Data.Excel;
 using XLConnect.Classes;
@@ -47,9 +48,9 @@ namespace XLConnect
         {
             try
             {
-                var servernameActual = System.Environment.MachineName.ToUpper() == "DEVMACHINE" ? "LocalHost" : "Proc-SQL01";
+                var servernameActual = System.Environment.MachineName.ToUpper() == "DEVMACHINE" ? "RELMACHINE" : "Proc-SQL01";
                 Server_TextBox.Text = servernameActual;
-                await IsServerConnected(servernameActual);
+                //await IsServerConnected(servernameActual);
                 return true;
             }
             catch (Exception e)
@@ -89,7 +90,8 @@ namespace XLConnect
         private async Task<bool> PopulateComboBox()
         {
             bool haserror = false;
-            using (SqlConnection conn = new SqlConnection(SQLCONNECTION))
+            string connectionString = @"Data Source=" + Server_TextBox.Text + ";Initial Catalog=Master;Integrated Security=True;";
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
@@ -117,7 +119,8 @@ namespace XLConnect
         private async Task<bool> PopulateTableComboBox()
         {
             bool haserror = false;
-            using (SqlConnection conn = new SqlConnection(SQLCONNECTION))
+            string connectionString = @"Data Source=" + Server_TextBox.Text + ";Initial Catalog=Master;Integrated Security=True;";
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
