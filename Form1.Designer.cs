@@ -29,6 +29,7 @@ namespace XLConnect
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Control_GroupBox = new System.Windows.Forms.GroupBox();
             this.AddDataBase_Button = new System.Windows.Forms.Button();
@@ -50,6 +51,7 @@ namespace XLConnect
             this.Delimiter_TextBox = new System.Windows.Forms.TextBox();
             this.Delimiter_Label = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.SkipFirstRow_CheckBox = new System.Windows.Forms.CheckBox();
             this.headerRow_Label = new System.Windows.Forms.Label();
             this.headerRow_TextBox = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -72,7 +74,6 @@ namespace XLConnect
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.Export_Button = new System.Windows.Forms.Button();
             this.Run_Button = new System.Windows.Forms.Button();
-            this.SkipFirstRow_CheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -325,6 +326,17 @@ namespace XLConnect
             this.panel6.Size = new System.Drawing.Size(182, 43);
             this.panel6.TabIndex = 4;
             // 
+            // SkipFirstRow_CheckBox
+            // 
+            this.SkipFirstRow_CheckBox.AutoSize = true;
+            this.SkipFirstRow_CheckBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.SkipFirstRow_CheckBox.Location = new System.Drawing.Point(0, 26);
+            this.SkipFirstRow_CheckBox.Name = "SkipFirstRow_CheckBox";
+            this.SkipFirstRow_CheckBox.Size = new System.Drawing.Size(182, 17);
+            this.SkipFirstRow_CheckBox.TabIndex = 4;
+            this.SkipFirstRow_CheckBox.Text = "Skip First Row on Import?";
+            this.SkipFirstRow_CheckBox.UseVisualStyleBackColor = true;
+            // 
             // headerRow_Label
             // 
             this.headerRow_Label.AutoSize = true;
@@ -564,26 +576,17 @@ namespace XLConnect
             this.Run_Button.UseVisualStyleBackColor = true;
             this.Run_Button.Click += new System.EventHandler(this.Run_Button_Click);
             // 
-            // SkipFirstRow_CheckBox
-            // 
-            this.SkipFirstRow_CheckBox.AutoSize = true;
-            this.SkipFirstRow_CheckBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SkipFirstRow_CheckBox.Location = new System.Drawing.Point(0, 26);
-            this.SkipFirstRow_CheckBox.Name = "SkipFirstRow_CheckBox";
-            this.SkipFirstRow_CheckBox.Size = new System.Drawing.Size(182, 17);
-            this.SkipFirstRow_CheckBox.TabIndex = 4;
-            this.SkipFirstRow_CheckBox.Text = "Skip First Row on Import?";
-            this.SkipFirstRow_CheckBox.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 687);
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "XL Connect";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
