@@ -17,12 +17,30 @@
             <param name="options">The options to configure the reader, or null to use the default options.</param>
             <returns>A task representing the asynchronous creation of a CsvDataReader instance.</returns>
         </member>
+        <member name="M:Sylvan.Data.Csv.CsvDataReader.CreateAsync(System.String,Sylvan.Data.Csv.CsvDataReaderOptions,System.Threading.CancellationToken)">
+            <summary>
+            Creates a new CsvDataReader asynchronously.                                                                                          
+            </summary>
+            <param name="filename">The name of a file containing CSV data.</param>
+            <param name="options">The options to configure the reader, or null to use the default options.</param>
+            <param name="cancel">The optional cancellation token to be used for cancelling the initialization sequence.</param>
+            <returns>A task representing the asynchronous creation of a CsvDataReader instance.</returns>
+        </member>
         <member name="M:Sylvan.Data.Csv.CsvDataReader.CreateAsync(System.IO.TextReader,Sylvan.Data.Csv.CsvDataReaderOptions)">
             <summary>
             Creates a new CsvDataReader asynchronously.
             </summary>
             <param name="reader">The TextReader for the delimited data.</param>
             <param name="options">The options to configure the reader, or null to use the default options.</param>
+            <returns>A task representing the asynchronous creation of a CsvDataReader instance.</returns>
+        </member>
+        <member name="M:Sylvan.Data.Csv.CsvDataReader.CreateAsync(System.IO.TextReader,Sylvan.Data.Csv.CsvDataReaderOptions,System.Threading.CancellationToken)">
+            <summary>
+            Creates a new CsvDataReader asynchronously.
+            </summary>
+            <param name="reader">The TextReader for the delimited data.</param>
+            <param name="options">The options to configure the reader, or null to use the default options.</param>
+            <param name="cancel">The optional cancellation token to be used for cancelling the initialization sequence.</param>
             <returns>A task representing the asynchronous creation of a CsvDataReader instance.</returns>
         </member>
         <member name="M:Sylvan.Data.Csv.CsvDataReader.CreateAsync(System.IO.TextReader,System.Char[],Sylvan.Data.Csv.CsvDataReaderOptions)">
@@ -32,6 +50,16 @@
             <param name="reader">The TextReader for the delimited data.</param>
             <param name="buffer">A buffer to use for internal processing.</param>
             <param name="options">The options to configure the reader, or null to use the default options.</param>
+            <returns>A task representing the asynchronous creation of a CsvDataReader instance.</returns>
+        </member>
+        <member name="M:Sylvan.Data.Csv.CsvDataReader.CreateAsync(System.IO.TextReader,System.Char[],Sylvan.Data.Csv.CsvDataReaderOptions,System.Threading.CancellationToken)">
+            <summary>
+            Creates a new CsvDataReader asynchronously.
+            </summary>
+            <param name="reader">The TextReader for the delimited data.</param>
+            <param name="buffer">A buffer to use for internal processing.</param>
+            <param name="options">The options to configure the reader, or null to use the default options.</param>
+            <param name="cancel">The optional cancellation token to be used for cancelling the initialization sequence.</param>
             <returns>A task representing the asynchronous creation of a CsvDataReader instance.</returns>
         </member>
         <member name="M:Sylvan.Data.Csv.CsvDataReader.ReadAsync(System.Threading.CancellationToken)">
@@ -219,6 +247,14 @@
             The Sylvan.Common library can provide an implementation of this method via the Sylvan.StringPool type.
             </remarks>
         </member>
+        <member name="T:Sylvan.Data.Csv.ColumnStringFactory">
+            <summary>
+            A function that can be used to de-dupe strings during construction directly from internal buffers.
+            </summary>
+            <remarks>
+            The Sylvan.Common library can provide an implementation of this method via the Sylvan.StringPool type.
+            </remarks>
+        </member>
         <member name="T:Sylvan.Data.Csv.CommentHandler">
             <summary>
             A callback handler to receive comments read from a CSV file.
@@ -295,6 +331,11 @@
             </summary>
         </member>
         <member name="P:Sylvan.Data.Csv.CsvDataReaderOptions.StringFactory">
+            <summary>
+            A string factory function which can de-dupe strings on construction. Defaults to null.
+            </summary>
+        </member>
+        <member name="P:Sylvan.Data.Csv.CsvDataReaderOptions.ColumnStringFactory">
             <summary>
             A string factory function which can de-dupe strings on construction. Defaults to null.
             </summary>
@@ -555,6 +596,12 @@
         <member name="F:Sylvan.Data.Csv.CsvSchema.Nullable">
             <summary>
             Gets a ICsvSchemaProvider that treats empty strings as null.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Csv.CsvSchema.Dynamic">
+            <summary>
+            Gets a ICsvSchemaProvider that treats fields as "dynamic", where
+            the data type can change from row to row.
             </summary>
         </member>
         <member name="M:Sylvan.Data.Csv.CsvSchema.#ctor(System.Collections.Generic.IEnumerable{System.Data.Common.DbColumn})">

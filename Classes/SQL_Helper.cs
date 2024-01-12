@@ -203,7 +203,35 @@ namespace XLConnect.Classes
                         await _con.OpenAsync();
                         int count = (int)_cmd.ExecuteScalar();
                         valuetoreutrn = count;
+                    }
+                }
+                return valuetoreutrn;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Message: {e.Message}\nStackTrace: {e.StackTrace}");
+                return 0;
 
+            }
+        }
+
+        public async Task<int> getSQLCOUNT_FUllquery(string server, string query)
+        {
+
+            try
+            {
+                int valuetoreutrn = 0;
+                string connectionString = @"Data Source=" + server + ";Initial Catalog=Master;Integrated Security=True;Timeout=32767";
+                // MessageBox.Show( query);
+                using (SqlConnection _con = new SqlConnection(connectionString))
+                {
+                    await _con.OpenAsync();
+                    using (SqlCommand _cmd = new SqlCommand(query, _con))
+                    {
+                        _cmd.CommandTimeout = 32767;
+                        
+                        int count = (int) await _cmd.ExecuteScalarAsync();
+                        valuetoreutrn = count;
                     }
 
                 }
@@ -215,10 +243,6 @@ namespace XLConnect.Classes
                 return 0;
 
             }
-
-
-
-
         }
 
         public async Task<bool> RunSQLQuery(string query,string ServerName,string dataBaseName,DataTable Table)
@@ -249,8 +273,6 @@ namespace XLConnect.Classes
                             MessageBox.Show("Success");
                             return true;
                         }
-
-
                     }
                 }
                 catch (Exception e)

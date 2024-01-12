@@ -24,6 +24,15 @@
             <returns>The ExcelDataReader.</returns>
             <exception cref="T:System.ArgumentException">If the filename refers to a file of an unknown type.</exception>
         </member>
+        <member name="M:Sylvan.Data.Excel.ExcelDataReader.Create(System.IO.Stream,Sylvan.Data.Excel.ExcelWorkbookType,Sylvan.Data.Excel.ExcelDataReaderOptions)">
+            <summary>
+            Creates a new ExcelDataReader instance.
+            </summary>
+            <param name="stream">A stream containing the Excel file contents. </param>
+            <param name="fileType">The type of file represented by the stream.</param>
+            <param name="options">An optional ExcelDataReaderOptions instance.</param>
+            <returns>The ExcelDataReader.</returns>
+        </member>
         <member name="P:Sylvan.Data.Excel.ExcelDataReader.IsClosed">
             <inheritdoc/>
         </member>
@@ -42,15 +51,6 @@
             file.
             </summary>
         </member>
-        <member name="M:Sylvan.Data.Excel.ExcelDataReader.Create(System.IO.Stream,Sylvan.Data.Excel.ExcelWorkbookType,Sylvan.Data.Excel.ExcelDataReaderOptions)">
-            <summary>
-            Creates a new ExcelDataReader instance.
-            </summary>
-            <param name="stream">A stream containing the Excel file contents. </param>
-            <param name="fileType">The type of file represented by the stream.</param>
-            <param name="options">An optional ExcelDataReaderOptions instance.</param>
-            <returns>The ExcelDataReader.</returns>
-        </member>
         <member name="M:Sylvan.Data.Excel.ExcelDataReader.GetWorkbookType(System.String)">
             <summary>
             Gets the type of an Excel workbook from the file name.
@@ -61,14 +61,6 @@
             Tries to open a worksheet.
             </summary>
             <param name="name">The name of the worksheet to open.</param>
-            <returns>True if the sheet was opened, otherwise false.</returns>
-        </member>
-        <member name="M:Sylvan.Data.Excel.ExcelDataReader.TryOpenWorksheetAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Tries to open a worksheet.
-            </summary>
-            <param name="name">The name of the worksheet to open.</param>
-            <param name="cancel">A cancellation token for the async operation.</param>
             <returns>True if the sheet was opened, otherwise false.</returns>
         </member>
         <member name="P:Sylvan.Data.Excel.ExcelDataReader.WorksheetNames">
@@ -124,7 +116,7 @@
         </member>
         <member name="M:Sylvan.Data.Excel.ExcelDataReader.GetExcelValue(System.Int32)">
             <summary>
-            Gets the value as represented in excel.
+            Gets the value as represented in Excel.
             </summary>
             <remarks>
             Formula errors are returned as ExcelErrorCode values, rather than throwing an exception.
@@ -134,13 +126,17 @@
         </member>
         <member name="M:Sylvan.Data.Excel.ExcelDataReader.GetColumnSchema">
             <summary>
-            Gets the column schema
+            Gets the column schema of the current worksheet.
             </summary>
         </member>
         <member name="M:Sylvan.Data.Excel.ExcelDataReader.Initialize">
             <summary>
             Initializes the schema starting with the current row.
             </summary>
+            <remarks>
+            This can be used when a worksheet has "header" rows with non-data content.
+            Read past the header, and call Initialize when the row of tabular data is found.
+            </remarks>
         </member>
         <member name="M:Sylvan.Data.Excel.ExcelDataReader.GetValues(System.Object[])">
             <inheritdoc/>
@@ -355,7 +351,7 @@
         </member>
         <member name="T:Sylvan.Data.Excel.ExcelDataWriter">
             <summary>
-            Writes data to excel files.
+            Writes data to Excel files.
             </summary>
         </member>
         <member name="M:Sylvan.Data.Excel.ExcelDataWriter.Create(System.String,Sylvan.Data.Excel.ExcelDataWriterOptions)">
@@ -403,9 +399,148 @@
             Options for controlling the behavior of an <see cref="T:Sylvan.Data.Excel.ExcelDataWriter"/>.
             </summary>
         </member>
+        <member name="M:Sylvan.Data.Excel.ExcelDataWriterOptions.#ctor">
+            <summary>
+            Creates a new ExcelDataWriterOptions instance when the default settings.
+            </summary>
+        </member>
+        <member name="P:Sylvan.Data.Excel.ExcelDataWriterOptions.OwnsStream">
+            <summary>
+            Indicates if the ExcelDataWriter owns the output stream and handle disposal.
+            </summary>
+        </member>
         <member name="P:Sylvan.Data.Excel.ExcelDataWriterOptions.TruncateStrings">
             <summary>
             Indicates if string values should be truncated to the limit of Excel, which allows a maximum of 32k characters.
+            </summary>
+            <remarks>When false, an exception will be thrown if a string values exceeds the limit.</remarks>
+        </member>
+        <member name="P:Sylvan.Data.Excel.ExcelDataWriterOptions.CompressionLevel">
+            <summary>
+            The compression level to use.
+            </summary>
+        </member>
+        <member name="T:Sylvan.Data.Excel.ExcelFileType">
+            <summary>
+            Exposes information about the supported Excel file types.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelFileExtension">
+            <summary>
+            The file extension for .xls files.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelContentType">
+            <summary>
+            The content type for .xls files.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelXmlFileExtension">
+            <summary>
+            The file extension for .xlsx files.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelXmlContentType">
+            <summary>
+            The content type for .xlsx files.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelXmlMacroEnabledFileExtension">
+            <summary>
+            The file extension for .xlsm files.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelXmlMacroEnabledContentType">
+            <summary>
+            The content type for .xlsx files.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelBinaryFileExtension">
+            <summary>
+            The file extension for .xlsb files.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelBinaryContentType">
+            <summary>
+            The content type for .xlsx files.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.Excel">
+            <summary>
+            The .xls file type.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelXml">
+            <summary>
+            The .xlsx file type.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelXmlMacroEnabled">
+            <summary>
+            The .xlsm file type.
+            </summary>
+        </member>
+        <member name="F:Sylvan.Data.Excel.ExcelFileType.ExcelBinary">
+            <summary>
+            The .xlsb file type.
+            </summary>
+        </member>
+        <member name="P:Sylvan.Data.Excel.ExcelFileType.All">
+            <summary>
+            Enumerates all the file types exposed by the Sylvan library.
+            </summary>
+        </member>
+        <member name="P:Sylvan.Data.Excel.ExcelFileType.ReaderSupported">
+            <summary>
+            Enumerates all file types supported by the ExcelDataReader.
+            </summary>
+        </member>
+        <member name="P:Sylvan.Data.Excel.ExcelFileType.WriterSupported">
+            <summary>
+            Enumerates all file types supported by the ExcelDataWriter.
+            </summary>
+        </member>
+        <member name="M:Sylvan.Data.Excel.ExcelFileType.FindForFilename(System.String)">
+            <summary>
+            Gets the ExcelFileType for a given filename.
+            </summary>
+            <returns>An ExcelFileType or null.</returns>
+        </member>
+        <member name="M:Sylvan.Data.Excel.ExcelFileType.FindForExtension(System.String)">
+            <summary>
+            Gets the ExcelFileType for a given file extension.
+            </summary>
+            <returns>An ExcelFileType or null.</returns>
+        </member>
+        <member name="M:Sylvan.Data.Excel.ExcelFileType.FindForContentType(System.String)">
+            <summary>
+            Gets the ExcelFileType for a given content type.
+            </summary>
+            <returns>An ExcelFileType or null.</returns>
+        </member>
+        <member name="M:Sylvan.Data.Excel.ExcelFileType.GetForWorkbookType(Sylvan.Data.Excel.ExcelWorkbookType)">
+            <summary>
+            Gets the ExcelFileType for a ExcelWorkbookType.
+            </summary>
+        </member>
+        <member name="M:Sylvan.Data.Excel.ExcelFileType.IsExcelContentType(System.String)">
+            <summary>
+            Determines if the string defines a known Excel ContentType.
+            </summary>
+        </member>
+        <member name="P:Sylvan.Data.Excel.ExcelFileType.Extension">
+            <summary>
+            Gets the file extension.
+            </summary>
+        </member>
+        <member name="P:Sylvan.Data.Excel.ExcelFileType.ContentType">
+            <summary>
+            Gets the Content-Type.
+            </summary>
+        </member>
+        <member name="P:Sylvan.Data.Excel.ExcelFileType.WorkbookType">
+            <summary>
+            Gets the ExcelWorkbookType.
             </summary>
         </member>
         <member name="T:Sylvan.Data.Excel.FormatKind">

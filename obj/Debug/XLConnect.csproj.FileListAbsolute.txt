@@ -23,4 +23,12 @@ C:\Users\Travis\Documents\GitHub\XLConnect\obj\Debug\XLConnect.csproj.CopyComple
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\Debug\XLConnect.exe
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\Debug\XLConnect.pdb
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\Debug\XLConnect.csproj.AssemblyReference.cache
-C:\Users\Travis\Documents\GitHub\XLConnect\obj\Debug\XLConnect.csproj.SuggestedBindingRedirects.cache
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.Buffers.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.ComponentModel.Annotations.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.Memory.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.Buffers.xml
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.Memory.xml
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml

@@ -14,7 +14,6 @@ C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\Sylvan.Data.xml
 C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\Sylvan.Data.Csv.xml
 C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\Sylvan.Data.Excel.xml
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\XLConnect.csproj.AssemblyReference.cache
-C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\XLConnect.csproj.SuggestedBindingRedirects.cache
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\ExcelMate.Export_Window.resources
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\XLConnect.Form1.resources
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\XLConnect.Forms.PopUpForm.resources
@@ -24,3 +23,12 @@ C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\XLConnect.csproj.CoreCo
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\XLConnect.csproj.CopyComplete
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\XLConnect.exe
 C:\Users\Travis\Documents\GitHub\XLConnect\obj\x64\Debug\XLConnect.pdb
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.Buffers.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.ComponentModel.Annotations.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.Memory.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.Numerics.Vectors.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.Buffers.xml
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.Memory.xml
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.Numerics.Vectors.xml
+C:\Users\Travis\Documents\GitHub\XLConnect\bin\x64\Debug\System.Runtime.CompilerServices.Unsafe.xml
